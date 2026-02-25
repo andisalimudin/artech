@@ -47,10 +47,14 @@ export class BookkeepingService {
       _sum: { amount: true },
     });
 
+    // Handle Decimal or number types from Prisma aggregate
+    const totalIncome = Number(income._sum.amount || 0);
+    const totalExpense = Number(expenses._sum.amount || 0);
+
     return {
-      totalIncome: income._sum.amount || 0,
-      totalExpense: expenses._sum.amount || 0,
-      netProfit: (income._sum.amount || 0) as any - (expenses._sum.amount || 0) as any,
+      totalIncome,
+      totalExpense,
+      netProfit: totalIncome - totalExpense,
     };
   }
 
