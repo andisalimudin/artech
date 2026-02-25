@@ -1,0 +1,211 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  STAFF
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String
+  name          String
+  role          Role     @default(STAFF)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  projects      Project[] @relation("ProjectStaff")
+  managedProjects Project[] @relation("ProjectManager")
+  activityLogs  ActivityLog[]
+  expenses      Expense[]
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  address   String?
+  projects  Project[]
+  quotations Quotation[]
+  invoices  Invoice[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ProjectStatus {
+  PLANNING
+  ONGOING
+  COMPLETED
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  status      ProjectStatus @default(PLANNING)
+  budget      Decimal       @default(0) @db.Decimal(15, 2)
+  progress    Int           @default(0)
+  startDate   DateTime?
+  endDate     DateTime?
+  clientId    String
+  client      Client        @relation(fields: [clientId], references: [id])
+  managerId   String?
+  manager     User?         @relation("ProjectManager", fields: [managerId], references: [id])
+  staffs      User[]        @relation("ProjectStaff")
+  quotations  Quotation[]
+  invoices    Invoice[]
+  expenses    Expense[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Quotation {
+  id              String         @id @default(uuid())
+  number          String         @unique // Auto-generated
+  date            DateTime       @default(now())
+  expiryDate      DateTime?
+  status          String         @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED, CONVERTED
+  subTotal        Decimal        @db.Decimal(15, 2)
+  taxRate         Decimal        @default(0.06) @db.Decimal(5, 2) // Malaysia SST 6%
+  taxAmount       Decimal        @db.Decimal(15, 2)
+  total           Decimal        @db.Decimal(15, 2)
+  notes           String?
+  clientId        String
+  client          Client         @relation(fields: [clientId], references: [id])
+  projectId       String?
+  project         Project?       @relation(fields: [projectId], references: [id])
+  items           QuotationItem[]
+  invoice         Invoice?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model QuotationItem {
+  id          String    @id @default(uuid())
+  description String
+  quantity    Int
+  unitPrice   Decimal   @db.Decimal(15, 2)
+  totalPrice  Decimal   @db.Decimal(15, 2)
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Invoice {
+  id              String        @id @default(uuid())
+  number          String        @unique // Auto-generated
+  date            DateTime      @default(now())
+  dueDate         DateTime
+  status          InvoiceStatus @default(UNPAID)
+  subTotal        Decimal       @db.Decimal(15, 2)
+  taxRate         Decimal       @default(0.06) @db.Decimal(5, 2) // Malaysia SST 6%
+  taxAmount       Decimal       @db.Decimal(15, 2)
+  total           Decimal       @db.Decimal(15, 2)
+  amountPaid      Decimal       @default(0) @db.Decimal(15, 2)
+  amountRemaining Decimal       @db.Decimal(15, 2)
+  notes           String?
+  clientId        String
+  client          Client        @relation(fields: [clientId], references: [id])
+  projectId       String?
+  project         Project?      @relation(fields: [projectId], references: [id])
+  quotationId     String?       @unique
+  quotation       Quotation?    @relation(fields: [quotationId], references: [id])
+  items           InvoiceItem[]
+  payments        Payment[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model InvoiceItem {
+  id          String  @id @default(uuid())
+  description String
+  quantity    Int
+  unitPrice   Decimal @db.Decimal(15, 2)
+  totalPrice  Decimal @db.Decimal(15, 2)
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  amount        Decimal  @db.Decimal(15, 2)
+  date          DateTime @default(now())
+  paymentMethod String?
+  reference     String?
+  invoiceId     String
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id])
+  createdAt     DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  description String
+  amount      Decimal  @db.Decimal(15, 2)
+  date        DateTime @default(now())
+  category    String
+  receiptUrl  String?
+  isApproved  Boolean  @default(false)
+  approvedById String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Account {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  type        String   // ASSET, LIABILITY, EQUITY, INCOME, EXPENSE
+  balance     Decimal  @default(0) @db.Decimal(15, 2)
+  transactions Transaction[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  date        DateTime @default(now())
+  description String
+  amount      Decimal  @db.Decimal(15, 2)
+  type        String   // DEBIT, CREDIT
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model LandingPageContent {
+  id        String   @id @default(uuid())
+  section   String   @unique // hero, about, services, portfolio, testimonials, pricing, contact
+  content   Json
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   String?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
