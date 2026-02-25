@@ -40,7 +40,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-center space-y-2">
           <Link href="/" className="flex items-center space-x-2">
             <Zap className="h-10 w-10 text-primary" />
-            <span className="text-3xl font-bold tracking-tighter">ARTECH</span>
+            <span className="text-3xl font-bold tracking-tighter">AR Innovatech Solution</span>
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
           <p className="text-sm text-muted-foreground text-center">

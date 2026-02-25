@@ -40,7 +40,7 @@ export default function DashboardLayout({
         <div className="h-16 flex items-center px-6 border-b">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Zap className="h-6 w-6 text-primary" />
-            <span className="font-bold tracking-tight text-xl">ARTECH</span>
+            <span className="font-bold tracking-tight text-xl">AR Innovatech Solution</span>
           </Link>
         </div>
         <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
