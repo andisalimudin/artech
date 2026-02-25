@@ -30,15 +30,21 @@ interface Project {
   };
 }
 
+interface Client {
+  id: string;
+  name: string;
+}
+
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    clientId: '', // In a real app, this would be a select from available clients
+    clientId: '', 
     status: 'PLANNING',
     budget: 0,
     startDate: '',
@@ -47,6 +53,7 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     fetchProjects();
+    fetchClients();
   }, []);
 
   const fetchProjects = async () => {
@@ -60,16 +67,18 @@ export default function ProjectsPage() {
     }
   };
 
+  const fetchClients = async () => {
+    try {
+      const response = await api.get('/clients');
+      setClients(response.data);
+    } catch (error) {
+      console.error('Failed to fetch clients', error);
+    }
+  };
+
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Create a default client if not exists for demo purposes
-      // In production, we would select from existing clients
-      // For now, we'll just send the raw data and let the backend handle it or fail
-      // Since the backend expects a valid clientId, and we don't have a client selector yet,
-      // we might need to fetch clients first. 
-      // For this "quick fix", let's assume the user enters a Client ID manually or we create a dummy one.
-      
       await api.post('/projects', formData);
       setShowModal(false);
       fetchProjects();
@@ -84,7 +93,7 @@ export default function ProjectsPage() {
       });
     } catch (error) {
       console.error('Failed to create project', error);
-      alert('Failed to create project. Please ensure Client ID is valid.');
+      alert('Failed to create project. Please ensure Client is selected.');
     }
   };
 
@@ -161,6 +170,7 @@ export default function ProjectsPage() {
                   {project.name}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
+                  <Users className="inline h-3 w-3 mr-1" />
                   {project.client?.name || 'Unknown Client'}
                 </p>
 
@@ -213,6 +223,23 @@ export default function ProjectsPage() {
                 />
               </div>
               <div>
+                <label className="text-sm font-medium">Client</label>
+                <select 
+                  required
+                  className="w-full mt-1 p-2 border rounded-md"
+                  value={formData.clientId}
+                  onChange={(e) => setFormData({...formData, clientId: e.target.value})}
+                >
+                  <option value="">Select a client...</option>
+                  {clients.map(client => (
+                    <option key={client.id} value={client.id}>{client.name}</option>
+                  ))}
+                </select>
+                {clients.length === 0 && (
+                  <p className="text-xs text-rose-500 mt-1">No clients found. Please add a client first.</p>
+                )}
+              </div>
+              <div>
                 <label className="text-sm font-medium">Description</label>
                 <textarea 
                   className="w-full mt-1 p-2 border rounded-md"
@@ -263,19 +290,7 @@ export default function ProjectsPage() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">Client ID (Temporary)</label>
-                <input 
-                  required
-                  placeholder="Paste Client UUID here"
-                  className="w-full mt-1 p-2 border rounded-md"
-                  value={formData.clientId}
-                  onChange={(e) => setFormData({...formData, clientId: e.target.value})}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Note: In a full version, this would be a dropdown of clients.
-                </p>
-              </div>
+              
               <div className="flex justify-end gap-2 mt-6">
                 <button 
                   type="button"
