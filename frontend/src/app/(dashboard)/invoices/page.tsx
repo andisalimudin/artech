@@ -34,6 +34,7 @@ interface Invoice {
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [clients, setClients] = useState<{id: string, name: string}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -50,7 +51,17 @@ export default function InvoicesPage() {
 
   useEffect(() => {
     fetchInvoices();
+    fetchClients();
   }, []);
+
+  const fetchClients = async () => {
+    try {
+      const response = await api.get('/clients');
+      setClients(response.data);
+    } catch (error) {
+      console.error('Failed to fetch clients', error);
+    }
+  };
 
   const fetchInvoices = async () => {
     try {
@@ -214,14 +225,18 @@ export default function InvoicesPage() {
             <form onSubmit={handleCreateInvoice} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Client ID</label>
-                  <input 
+                  <label className="text-sm font-medium">Client</label>
+                  <select 
                     required
                     className="w-full mt-1 p-2 border rounded-md"
                     value={formData.clientId}
                     onChange={(e) => setFormData({...formData, clientId: e.target.value})}
-                    placeholder="UUID"
-                  />
+                  >
+                    <option value="">Select a client...</option>
+                    {clients.map(client => (
+                      <option key={client.id} value={client.id}>{client.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="text-sm font-medium">Project ID (Optional)</label>
