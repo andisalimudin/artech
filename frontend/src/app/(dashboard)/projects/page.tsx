@@ -78,6 +78,11 @@ export default function ProjectsPage() {
 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.clientId) {
+      alert('Please select a client from the list.');
+      return;
+    }
+    
     try {
       await api.post('/projects', formData);
       setShowModal(false);
@@ -91,9 +96,11 @@ export default function ProjectsPage() {
         startDate: '',
         endDate: ''
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create project', error);
-      alert('Failed to create project. Please ensure Client is selected.');
+      // More detailed error message if available
+      const message = error.response?.data?.message || 'Failed to create project. Please try again.';
+      alert(message);
     }
   };
 
