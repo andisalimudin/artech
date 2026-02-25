@@ -48,6 +48,10 @@ export default function DashboardLayout({
             <LayoutDashboard className="h-5 w-5" />
             Overview
           </Link>
+          <Link href="/clients" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith('/clients') ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'}`}>
+            <User className="h-5 w-5" />
+            Clients
+          </Link>
           <Link href="/projects" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith('/projects') ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'}`}>
             <Briefcase className="h-5 w-5" />
             Projects
