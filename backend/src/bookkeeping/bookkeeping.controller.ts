@@ -1,4 +1,3 @@
-// src/bookkeeping/bookkeeping.controller.ts
 import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import { BookkeepingService } from './bookkeeping.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
