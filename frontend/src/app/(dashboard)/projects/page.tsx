@@ -1,7 +1,6 @@
-// src/app/(dashboard)/projects/page.tsx
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
@@ -10,44 +9,100 @@ import {
   ExternalLink,
   Calendar,
   Users,
-  BarChart2
+  BarChart2,
+  Trash2,
+  X
 } from 'lucide-react';
+import api from '@/lib/api';
+import { format } from 'date-fns';
 
-const mockProjects = [
-  {
-    id: '1',
-    name: 'E-commerce Platform Redesign',
-    client: 'TechCorp Malaysia',
-    status: 'ONGOING',
-    progress: 65,
-    budget: 25000,
-    deadline: '2026-05-15',
-    manager: 'Ahmad'
-  },
-  {
-    id: '2',
-    name: 'Corporate Website Development',
-    client: 'Global Logistics',
-    status: 'PLANNING',
-    progress: 15,
-    budget: 12000,
-    deadline: '2026-06-30',
-    manager: 'Sarah'
-  },
-  {
-    id: '3',
-    name: 'Mobile App Integration',
-    client: 'FinTech Solutions',
-    status: 'COMPLETED',
-    progress: 100,
-    budget: 45000,
-    deadline: '2026-02-10',
-    manager: 'David'
-  }
-];
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  budget: number;
+  progress: number;
+  startDate: string;
+  endDate: string;
+  client: {
+    name: string;
+  };
+}
 
 export default function ProjectsPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    clientId: '', // In a real app, this would be a select from available clients
+    status: 'PLANNING',
+    budget: 0,
+    startDate: '',
+    endDate: ''
+  });
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await api.get('/projects');
+      setProjects(response.data);
+    } catch (error) {
+      console.error('Failed to fetch projects', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // Create a default client if not exists for demo purposes
+      // In production, we would select from existing clients
+      // For now, we'll just send the raw data and let the backend handle it or fail
+      // Since the backend expects a valid clientId, and we don't have a client selector yet,
+      // we might need to fetch clients first. 
+      // For this "quick fix", let's assume the user enters a Client ID manually or we create a dummy one.
+      
+      await api.post('/projects', formData);
+      setShowModal(false);
+      fetchProjects();
+      setFormData({
+        name: '',
+        description: '',
+        clientId: '',
+        status: 'PLANNING',
+        budget: 0,
+        startDate: '',
+        endDate: ''
+      });
+    } catch (error) {
+      console.error('Failed to create project', error);
+      alert('Failed to create project. Please ensure Client ID is valid.');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this project?')) {
+      try {
+        await api.delete(`/projects/${id}`);
+        fetchProjects();
+      } catch (error) {
+        console.error('Failed to delete project', error);
+      }
+    }
+  };
+
+  const filteredProjects = projects.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.client?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -56,7 +111,10 @@ export default function ProjectsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Project Management</h1>
           <p className="text-muted-foreground mt-1">Manage and track your technology projects efficiently.</p>
         </div>
-        <button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90">
+        <button 
+          onClick={() => setShowModal(true)}
+          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+        >
           <Plus className="mr-2 h-4 w-4" /> New Project
         </button>
       </div>
@@ -73,43 +131,44 @@ export default function ProjectsPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex gap-2">
-          <button className="inline-flex h-10 items-center justify-center rounded-md bg-background border px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent">
-            <Filter className="mr-2 h-4 w-4" /> Filter
-          </button>
-          <button className="inline-flex h-10 items-center justify-center rounded-md bg-background border px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent">
-            Export CSV
-          </button>
-        </div>
       </div>
 
       {/* Projects Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {mockProjects.map((project) => (
-          <div key={project.id} className="group relative rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/20">
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                  project.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700' :
-                  project.status === 'ONGOING' ? 'bg-blue-100 text-blue-700' :
-                  'bg-orange-100 text-orange-700'
-                }`}>
-                  {project.status}
+      {isLoading ? (
+        <div className="text-center py-10">Loading projects...</div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filteredProjects.map((project) => (
+            <div key={project.id} className="group relative rounded-xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/20">
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                    project.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700' :
+                    project.status === 'ONGOING' ? 'bg-blue-100 text-blue-700' :
+                    'bg-orange-100 text-orange-700'
+                  }`}>
+                    {project.status}
+                  </div>
+                  <button 
+                    onClick={() => handleDelete(project.id)}
+                    className="text-muted-foreground hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
-                <button className="text-muted-foreground hover:text-foreground">
-                  <MoreVertical className="h-4 w-4" />
-                </button>
-              </div>
-              
-              <h3 className="text-xl font-bold mb-1 group-hover:text-primary transition-colors line-clamp-1">
-                {project.name}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">{project.client}</p>
+                
+                <h3 className="font-semibold text-lg leading-none tracking-tight mb-2 group-hover:text-primary transition-colors">
+                  {project.name}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {project.client?.name || 'Unknown Client'}
+                </p>
 
-              <div className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-muted-foreground">Progress</span>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground flex items-center">
+                      <BarChart2 className="mr-2 h-4 w-4" /> Progress
+                    </span>
                     <span className="font-medium">{project.progress}%</span>
                   </div>
                   <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
@@ -118,32 +177,124 @@ export default function ProjectsPage() {
                       style={{ width: `${project.progress}%` }}
                     />
                   </div>
+                  
+                  <div className="pt-4 border-t flex items-center justify-between text-sm">
+                    <div className="flex items-center text-muted-foreground">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {project.endDate ? format(new Date(project.endDate), 'MMM d, yyyy') : 'No Deadline'}
+                    </div>
+                    <div className="font-medium">
+                      RM {Number(project.budget).toLocaleString()}
+                    </div>
+                  </div>
                 </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="h-3.5 w-3.5" />
-                    {project.deadline}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Users className="h-3.5 w-3.5" />
-                    {project.manager}
-                  </div>
+      {/* Create Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-background p-6 rounded-lg w-full max-w-lg shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">New Project</h2>
+              <button onClick={() => setShowModal(false)}><X className="h-5 w-5" /></button>
+            </div>
+            <form onSubmit={handleCreateProject} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Project Name</label>
+                <input 
+                  required
+                  className="w-full mt-1 p-2 border rounded-md"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Description</label>
+                <textarea 
+                  className="w-full mt-1 p-2 border rounded-md"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Budget (RM)</label>
+                  <input 
+                    type="number"
+                    className="w-full mt-1 p-2 border rounded-md"
+                    value={formData.budget}
+                    onChange={(e) => setFormData({...formData, budget: Number(e.target.value)})}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Status</label>
+                  <select 
+                    className="w-full mt-1 p-2 border rounded-md"
+                    value={formData.status}
+                    onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  >
+                    <option value="PLANNING">Planning</option>
+                    <option value="ONGOING">Ongoing</option>
+                    <option value="COMPLETED">Completed</option>
+                  </select>
                 </div>
               </div>
-            </div>
-            
-            <div className="border-t p-4 bg-slate-50/50 rounded-b-xl flex items-center justify-between">
-              <div className="text-sm font-semibold">
-                RM {project.budget.toLocaleString()}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Start Date</label>
+                  <input 
+                    type="date"
+                    className="w-full mt-1 p-2 border rounded-md"
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">End Date</label>
+                  <input 
+                    type="date"
+                    className="w-full mt-1 p-2 border rounded-md"
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
+                  />
+                </div>
               </div>
-              <button className="text-primary text-sm font-medium flex items-center hover:underline">
-                View Details <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-              </button>
-            </div>
+              <div>
+                <label className="text-sm font-medium">Client ID (Temporary)</label>
+                <input 
+                  required
+                  placeholder="Paste Client UUID here"
+                  className="w-full mt-1 p-2 border rounded-md"
+                  value={formData.clientId}
+                  onChange={(e) => setFormData({...formData, clientId: e.target.value})}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Note: In a full version, this would be a dropdown of clients.
+                </p>
+              </div>
+              <div className="flex justify-end gap-2 mt-6">
+                <button 
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 border rounded-md hover:bg-accent"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                >
+                  Create Project
+                </button>
+              </div>
+            </form>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
