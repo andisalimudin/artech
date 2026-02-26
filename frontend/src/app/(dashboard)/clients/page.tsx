@@ -11,7 +11,8 @@ import {
   Trash2,
   X,
   FileText,
-  Briefcase
+  Briefcase,
+  RefreshCw
 } from 'lucide-react';
 import api from '@/lib/api';
 import { format } from 'date-fns';
@@ -23,7 +24,7 @@ interface Client {
   phone: string;
   address: string;
   projects: any[];
-  _count: {
+  _count?: {
     projects: number;
     invoices: number;
     quotations: number;
@@ -47,6 +48,7 @@ export default function ClientsPage() {
   }, []);
 
   const fetchClients = async () => {
+    setIsLoading(true);
     try {
       const response = await api.get(`/clients?t=${new Date().getTime()}`);
       console.log('Fetched clients:', response.data.length);
@@ -62,7 +64,16 @@ export default function ClientsPage() {
     e.preventDefault();
     try {
       console.log('Sending client data:', formData);
-      await api.post('/clients', formData);
+      const response = await api.post('/clients', formData);
+      
+      // Optimistic Update: Add new client to state immediately
+      const newClient = {
+        ...response.data,
+        projects: [],
+        _count: { projects: 0, invoices: 0, quotations: 0 }
+      };
+      setClients(prev => [newClient, ...prev]);
+      
       setShowModal(false);
       setFormData({
         name: '',
@@ -70,8 +81,10 @@ export default function ClientsPage() {
         phone: '',
         address: ''
       });
-      await fetchClients();
       alert('Pelanggan berjaya dicipta!');
+      
+      // Fetch latest data in background to ensure consistency
+      fetchClients();
     } catch (error: any) {
       console.error('Failed to create client', error);
       
@@ -116,6 +129,13 @@ export default function ClientsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Pelanggan</h1>
           <p className="text-muted-foreground mt-1">Urus pangkalan data pelanggan dan hubungan.</p>
         </div>
+        <button 
+          onClick={fetchClients}
+          disabled={isLoading}
+          className="inline-flex h-10 items-center justify-center rounded-md border bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+        </button>
         <button 
           onClick={() => setShowModal(true)}
           className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
