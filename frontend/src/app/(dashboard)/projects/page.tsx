@@ -174,7 +174,9 @@ export default function ProjectsPage() {
                 </div>
                 
                 <h3 className="font-semibold text-lg leading-none tracking-tight mb-2 group-hover:text-primary transition-colors">
-                  {project.name}
+                  <a href={`/projects/${project.id}`} className="hover:underline">
+                    {project.name}
+                  </a>
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   <Users className="inline h-3 w-3 mr-1" />
