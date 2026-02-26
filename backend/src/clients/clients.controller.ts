@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
 import { ClientsService } from './clients.service';
+import { CreateClientDto } from './create-client.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -28,14 +29,14 @@ export class ClientsController {
   @Post()
   @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STAFF)
   @ApiOperation({ summary: 'Create a new client' })
-  create(@Body() data: any) {
+  create(@Body() data: CreateClientDto) {
     return this.clientsService.create(data);
   }
 
   @Put(':id')
   @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STAFF)
   @ApiOperation({ summary: 'Update a client' })
-  update(@Param('id') id: string, @Body() data: any) {
+  update(@Param('id') id: string, @Body() data: CreateClientDto) {
     return this.clientsService.update(id, data);
   }
 
