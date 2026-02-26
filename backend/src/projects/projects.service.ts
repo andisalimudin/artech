@@ -1,8 +1,8 @@
 // src/projects/projects.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ActivityLogsService } from '../activity-logs/activity-logs.service';
-import { ProjectStatus } from '@prisma/client';
+import { ProjectStatus, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProjectsService {
@@ -38,6 +38,10 @@ export class ProjectsService {
     console.log('ProjectsService.create input:', data);
     try {
       const { staffs, startDate, endDate, budget, userId, ...rest } = data;
+
+      if (!rest?.clientId) {
+        throw new BadRequestException('clientId is required');
+      }
       
       // Generate Project Code: P-YYYY-001
       const year = new Date().getFullYear();
@@ -46,10 +50,28 @@ export class ProjectsService {
       let attempt = 0;
 
       // Retry logic for unique code generation
-      while (!isUnique && attempt < 5) {
-        const count = await this.prisma.project.count();
-        const sequence = count + 1 + attempt;
-        code = `P-${year}-${sequence.toString().padStart(3, '0')}`;
+      // Use timestamp component to ensure uniqueness in high concurrency/conflict scenarios
+      while (!isUnique && attempt < 10) {
+        
+        // Better approach: Find the last created project code to determine next sequence
+        const lastProject = await this.prisma.project.findFirst({
+           orderBy: { createdAt: 'desc' },
+           where: { code: { startsWith: `P-${year}-` } },
+           select: { code: true }
+        });
+
+        let nextSeq = 1 + attempt;
+        if (lastProject && lastProject.code) {
+            const parts = lastProject.code.split('-');
+            if (parts.length === 3) {
+                const lastSeq = parseInt(parts[2]);
+                if (!isNaN(lastSeq)) {
+                    nextSeq = lastSeq + 1 + attempt;
+                }
+            }
+        }
+
+        code = `P-${year}-${nextSeq.toString().padStart(3, '0')}`;
         
         const existing = await this.prisma.project.findUnique({ where: { code } });
         if (!existing) {
@@ -66,7 +88,9 @@ export class ProjectsService {
       // Sanitize dates
       const validStartDate = startDate ? new Date(startDate) : undefined;
       const validEndDate = endDate ? new Date(endDate) : undefined;
-      const validBudget = budget ? Number(budget) : 0;
+      const validBudget = (budget !== undefined && budget !== null && budget !== '')
+        ? Number(budget)
+        : 0;
 
       const projectData: any = {
         ...rest,
@@ -104,14 +128,15 @@ export class ProjectsService {
       return project;
     } catch (error) {
       console.error('ProjectsService.create error:', error);
-      // Add more context to the error
-      if (error.code === 'P2002') {
-         throw new Error(`Unique constraint violation: ${error.meta?.target}`);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('Project code already exists');
+        }
+        if (error.code === 'P2003') {
+          throw new BadRequestException('Invalid reference for client or staff');
+        }
       }
-      if (error.code === 'P2003') {
-         throw new Error(`Foreign key constraint violation: ${error.meta?.field_name}`);
-      }
-      throw error;
+      throw new InternalServerErrorException('Failed to create project');
     }
   }
 
