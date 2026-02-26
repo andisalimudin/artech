@@ -16,7 +16,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import api from '@/lib/api';
-import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
 
 interface Transaction {
   id: string;
@@ -186,7 +186,7 @@ export default function BookkeepingPage() {
             <Download className="mr-2 h-4 w-4" /> Eksport CSV
           </button>
           <button 
-            onClick={() => setShowModal(true)}
+            onClick={() => { resetForm(); setShowModal(true); }}
             className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
           >
             <Plus className="mr-2 h-4 w-4" /> Tambah Transaksi
@@ -264,14 +264,16 @@ export default function BookkeepingPage() {
                 <th className="px-6 py-4 text-left font-medium text-muted-foreground">Penerangan</th>
                 <th className="px-6 py-4 text-left font-medium text-muted-foreground">Kategori</th>
                 <th className="px-6 py-4 text-left font-medium text-muted-foreground">Jenis</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Resit</th>
                 <th className="px-6 py-4 text-right font-medium text-muted-foreground">Jumlah</th>
+                <th className="px-6 py-4 text-right font-medium text-muted-foreground">Tindakan</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {isLoading ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center">Memuatkan...</td></tr>
+                <tr><td colSpan={7} className="px-6 py-4 text-center">Memuatkan...</td></tr>
               ) : transactions.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center">Tiada transaksi ditemui untuk tempoh ini.</td></tr>
+                <tr><td colSpan={7} className="px-6 py-4 text-center">Tiada transaksi ditemui untuk tempoh ini.</td></tr>
               ) : transactions.map((tx) => (
                 <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 text-muted-foreground">{format(new Date(tx.date), 'MMM d, yyyy')}</td>
@@ -285,13 +287,43 @@ export default function BookkeepingPage() {
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       tx.type === 'INCOME' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
                     }`}>
-                      {tx.type}
+                      {tx.type === 'INCOME' ? 'Pendapatan' : 'Perbelanjaan'}
                     </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    {tx.receiptUrl ? (
+                      <a 
+                        href={`${process.env.NEXT_PUBLIC_API_URL}${tx.receiptUrl}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 inline-flex items-center gap-1 text-xs"
+                      >
+                        <ExternalLink className="h-3 w-3" /> Lihat
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground text-xs">-</span>
+                    )}
                   </td>
                   <td className={`px-6 py-4 text-right font-bold ${
                     tx.type === 'INCOME' ? 'text-emerald-600' : 'text-rose-600'
                   }`}>
                     {tx.type === 'INCOME' ? '+' : '-'} RM {Number(tx.amount).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-2">
+                      <button 
+                        onClick={() => handleEdit(tx)}
+                        className="p-1 text-slate-500 hover:text-primary transition-colors"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(tx.id)}
+                        className="p-1 text-slate-500 hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
