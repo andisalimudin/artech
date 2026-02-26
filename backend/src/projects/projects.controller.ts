@@ -27,7 +27,7 @@ export class ProjectsController {
   }
 
   @Post()
-  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STAFF)
   @ApiOperation({ summary: 'Create a new project' })
   async create(@Body() data: any, @Req() req) {
     try {
@@ -41,7 +41,7 @@ export class ProjectsController {
   }
 
   @Put(':id')
-  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STAFF)
   @ApiOperation({ summary: 'Update a project' })
   update(@Param('id') id: string, @Body() data: any, @Req() req) {
     return this.projectsService.update(id, { ...data, userId: req.user.userId });
