@@ -23,6 +23,11 @@ export class ProjectsService {
   async create(data: any) {
     const { staffs, startDate, endDate, budget, ...rest } = data;
     
+    // Generate Project Code: P-YYYY-001
+    const year = new Date().getFullYear();
+    const count = await this.prisma.project.count();
+    const code = `P-${year}-${(count + 1).toString().padStart(3, '0')}`;
+
     // Sanitize dates: Convert empty strings to null, valid strings to Date
     const validStartDate = startDate ? new Date(startDate) : undefined;
     const validEndDate = endDate ? new Date(endDate) : undefined;
@@ -33,6 +38,7 @@ export class ProjectsService {
     return this.prisma.project.create({
       data: {
         ...rest,
+        code,
         startDate: validStartDate,
         endDate: validEndDate,
         budget: validBudget,
