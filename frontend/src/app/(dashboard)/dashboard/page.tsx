@@ -1,7 +1,7 @@
 // src/app/(dashboard)/dashboard/page.tsx
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   BarChart, 
   Bar, 
@@ -20,28 +20,63 @@ import {
   Clock, 
   CreditCard, 
   ArrowUpRight, 
-  ArrowDownRight 
+  ArrowDownRight,
+  CheckCircle2,
+  AlertCircle,
+  Layout
 } from 'lucide-react';
-
-const data = [
-  { name: 'Jan', revenue: 4000, expenses: 2400 },
-  { name: 'Feb', revenue: 3000, expenses: 1398 },
-  { name: 'Mar', revenue: 2000, expenses: 9800 },
-  { name: 'Apr', revenue: 2780, expenses: 3908 },
-  { name: 'May', revenue: 1890, expenses: 4800 },
-  { name: 'Jun', revenue: 2390, expenses: 3800 },
-];
+import api from '@/lib/api';
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    ongoingProjects: 0,
+    completedProjects: 0,
+    overdueTasks: 0
+  });
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const projectsRes = await api.get('/projects');
+      const tasksRes = await api.get('/tasks');
+      
+      const projects = projectsRes.data;
+      const tasks = tasksRes.data;
+
+      setStats({
+        totalProjects: projects.length,
+        ongoingProjects: projects.filter((p: any) => p.status === 'ONGOING').length,
+        completedProjects: projects.filter((p: any) => p.status === 'COMPLETED').length,
+        overdueTasks: tasks.filter((t: any) => t.status !== 'DONE' && new Date(t.dueDate) < new Date()).length
+      });
+    } catch (error) {
+      console.error('Failed to fetch dashboard data', error);
+    }
+  };
+
+  const chartData = [
+    { name: 'Jan', projects: 4, tasks: 24 },
+    { name: 'Feb', projects: 3, tasks: 13 },
+    { name: 'Mar', projects: 2, tasks: 38 },
+    { name: 'Apr', projects: 6, tasks: 40 },
+    { name: 'May', projects: 4, tasks: 35 },
+    { name: 'Jun', projects: 7, tasks: 45 },
+  ];
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Gambaran Keseluruhan Papan Pemuka</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Papan Pemuka Utama</h1>
         <div className="flex gap-2">
-          <button className="inline-flex h-9 items-center justify-center rounded-md bg-background border px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground">
+          <button className="inline-flex h-9 items-center justify-center rounded-md bg-white border border-slate-200 px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-slate-50 text-slate-700">
             Muat Turun Laporan
           </button>
-          <button className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90">
+          <button className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-primary/90">
             Cipta Projek
           </button>
         </div>
@@ -49,98 +84,79 @@ export default function DashboardPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between space-y-0 pb-2">
-            <p className="text-sm font-medium text-muted-foreground">Jumlah Hasil</p>
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
+            <p className="text-sm font-medium text-slate-500">Jumlah Projek</p>
+            <Layout className="h-4 w-4 text-slate-500" />
           </div>
-          <div className="text-2xl font-bold">$45,231.89</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1">
-            <span className="text-emerald-500 flex items-center mr-1">
-              +20.1% <ArrowUpRight className="h-3 w-3" />
-            </span>
-            dari bulan lepas
-          </p>
+          <div className="text-2xl font-bold text-slate-900">{stats.totalProjects}</div>
+          <p className="text-xs text-slate-500 mt-1">Keseluruhan projek</p>
         </div>
-        <div className="rounded-xl border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between space-y-0 pb-2">
-            <p className="text-sm font-medium text-muted-foreground">Projek Aktif</p>
+            <p className="text-sm font-medium text-slate-500">Projek Sedang Berjalan</p>
             <Briefcase className="h-4 w-4 text-blue-500" />
           </div>
-          <div className="text-2xl font-bold">+12</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1">
-            <span className="text-emerald-500 flex items-center mr-1">
-              +4 <ArrowUpRight className="h-3 w-3" />
-            </span>
-            sejak minggu lepas
+          <div className="text-2xl font-bold text-slate-900">{stats.ongoingProjects}</div>
+          <p className="text-xs text-slate-500 mt-1">
+            <span className="text-blue-600 font-medium">Aktif</span> sekarang
           </p>
         </div>
-        <div className="rounded-xl border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between space-y-0 pb-2">
-            <p className="text-sm font-medium text-muted-foreground">Invois Belum Bayar</p>
-            <Receipt className="h-4 w-4 text-orange-500" />
+            <p className="text-sm font-medium text-slate-500">Projek Selesai</p>
+            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
           </div>
-          <div className="text-2xl font-bold">RM 12,400</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1">
-            <span className="text-rose-500 flex items-center mr-1">
-              +2 <ArrowUpRight className="h-3 w-3" />
-            </span>
-            lewat
+          <div className="text-2xl font-bold text-slate-900">{stats.completedProjects}</div>
+          <p className="text-xs text-slate-500 mt-1">
+            Telah disiapkan
           </p>
         </div>
-        <div className="rounded-xl border bg-card p-6 shadow-sm transition-all hover:shadow-md">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between space-y-0 pb-2">
-            <p className="text-sm font-medium text-muted-foreground">Perbelanjaan Tertunggak</p>
-            <CreditCard className="h-4 w-4 text-indigo-500" />
+            <p className="text-sm font-medium text-slate-500">Tugasan Lewat</p>
+            <AlertCircle className="h-4 w-4 text-rose-500" />
           </div>
-          <div className="text-2xl font-bold">RM 2,345</div>
-          <p className="text-xs text-muted-foreground flex items-center mt-1">
-            <span className="text-emerald-500 flex items-center mr-1">
-              -12% <ArrowDownRight className="h-3 w-3" />
-            </span>
-            dari bulan lepas
+          <div className="text-2xl font-bold text-slate-900">{stats.overdueTasks}</div>
+          <p className="text-xs text-slate-500 mt-1">
+            <span className="text-rose-600 font-medium">Perlu perhatian</span>
           </p>
         </div>
       </div>
 
       {/* Charts Section */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4 rounded-xl border bg-card p-6 shadow-sm">
-          <h3 className="text-lg font-semibold mb-6">Hasil vs Perbelanjaan</h3>
+        <div className="col-span-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-lg font-semibold mb-6 text-slate-900">Pertumbuhan Projek Bulanan</h3>
           <div className="h-[350px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
-                <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
+              <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
+                  cursor={{ fill: '#f8fafc' }}
                   contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                 />
-                <Area type="monotone" dataKey="revenue" stroke="#3b82f6" fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={2} />
-                <Area type="monotone" dataKey="expenses" stroke="#f43f5e" fillOpacity={0} strokeWidth={2} />
-              </AreaChart>
+                <Bar dataKey="projects" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="tasks" fill="#cbd5e1" radius={[4, 4, 0, 0]} />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="col-span-3 rounded-xl border bg-card p-6 shadow-sm">
-          <h3 className="text-lg font-semibold mb-6">Aktiviti Terkini</h3>
+        <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-lg font-semibold mb-6 text-slate-900">Aktiviti Terkini</h3>
           <div className="space-y-6">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center gap-4">
-                <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                  <Clock className="h-5 w-5" />
+              <div key={i} className="flex items-center gap-4 group cursor-pointer">
+                <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                  <Clock className="h-4 w-4" />
                 </div>
                 <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium leading-none">Invois Baru Dijana</p>
-                  <p className="text-xs text-muted-foreground">INV-2026-001 untuk Pelanggan X</p>
+                  <p className="text-sm font-medium leading-none text-slate-900">Tugasan Baru Dicipta</p>
+                  <p className="text-xs text-slate-500">Dikemaskini oleh Admin</p>
                 </div>
-                <div className="text-xs text-muted-foreground">2j lepas</div>
+                <div className="text-xs text-slate-400">2j lepas</div>
               </div>
             ))}
           </div>
