@@ -48,7 +48,8 @@ export default function ClientsPage() {
 
   const fetchClients = async () => {
     try {
-      const response = await api.get('/clients');
+      const response = await api.get(`/clients?t=${new Date().getTime()}`);
+      console.log('Fetched clients:', response.data.length);
       setClients(response.data);
     } catch (error) {
       console.error('Failed to fetch clients', error);
@@ -63,13 +64,13 @@ export default function ClientsPage() {
       console.log('Sending client data:', formData);
       await api.post('/clients', formData);
       setShowModal(false);
-      fetchClients();
       setFormData({
         name: '',
         email: '',
         phone: '',
         address: ''
       });
+      await fetchClients();
       alert('Pelanggan berjaya dicipta!');
     } catch (error: any) {
       console.error('Failed to create client', error);
