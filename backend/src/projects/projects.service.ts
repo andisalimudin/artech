@@ -41,8 +41,27 @@ export class ProjectsService {
       
       // Generate Project Code: P-YYYY-001
       const year = new Date().getFullYear();
-      const count = await this.prisma.project.count();
-      const code = `P-${year}-${(count + 1).toString().padStart(3, '0')}`;
+      let code: string;
+      let isUnique = false;
+      let attempt = 0;
+
+      // Retry logic for unique code generation
+      while (!isUnique && attempt < 5) {
+        const count = await this.prisma.project.count();
+        const sequence = count + 1 + attempt;
+        code = `P-${year}-${sequence.toString().padStart(3, '0')}`;
+        
+        const existing = await this.prisma.project.findUnique({ where: { code } });
+        if (!existing) {
+          isUnique = true;
+        } else {
+          attempt++;
+        }
+      }
+
+      if (!isUnique) {
+        throw new Error('Failed to generate unique project code');
+      }
 
       // Sanitize dates
       const validStartDate = startDate ? new Date(startDate) : undefined;
@@ -51,7 +70,7 @@ export class ProjectsService {
 
       const projectData: any = {
         ...rest,
-        code,
+        code: code!,
         startDate: validStartDate,
         endDate: validEndDate,
         budget: validBudget,
@@ -62,6 +81,8 @@ export class ProjectsService {
           connect: staffs.map((id: string) => ({ id })),
         };
       }
+
+      console.log('Prisma create data:', JSON.stringify(projectData, null, 2));
 
       const project = await this.prisma.project.create({
         data: projectData,
@@ -83,6 +104,13 @@ export class ProjectsService {
       return project;
     } catch (error) {
       console.error('ProjectsService.create error:', error);
+      // Add more context to the error
+      if (error.code === 'P2002') {
+         throw new Error(`Unique constraint violation: ${error.meta?.target}`);
+      }
+      if (error.code === 'P2003') {
+         throw new Error(`Foreign key constraint violation: ${error.meta?.field_name}`);
+      }
       throw error;
     }
   }
