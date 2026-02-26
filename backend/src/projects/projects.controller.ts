@@ -1,5 +1,5 @@
 // src/projects/projects.controller.ts
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Req } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -29,15 +29,15 @@ export class ProjectsController {
   @Post()
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiOperation({ summary: 'Create a new project' })
-  create(@Body() data: any) {
-    return this.projectsService.create(data);
+  create(@Body() data: any, @Req() req) {
+    return this.projectsService.create({ ...data, userId: req.user.userId });
   }
 
   @Put(':id')
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiOperation({ summary: 'Update a project' })
-  update(@Param('id') id: string, @Body() data: any) {
-    return this.projectsService.update(id, data);
+  update(@Param('id') id: string, @Body() data: any, @Req() req) {
+    return this.projectsService.update(id, { ...data, userId: req.user.userId });
   }
 
   @Delete(':id')

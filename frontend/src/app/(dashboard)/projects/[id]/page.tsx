@@ -47,6 +47,8 @@ interface Project {
     name: string;
   };
   tasks: Task[];
+  documents: any[];
+  activityLogs: any[];
 }
 
 export default function ProjectDetailsPage() {
@@ -55,6 +57,7 @@ export default function ProjectDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('tasks');
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [taskForm, setTaskForm] = useState({
     title: '',
     description: '',
@@ -87,7 +90,7 @@ export default function ProjectDetailsPage() {
         projectId: params.id
       });
       setShowTaskModal(false);
-      fetchProjectDetails(); // Refresh to show new task and update progress
+      fetchProjectDetails();
       setTaskForm({
         title: '',
         description: '',
@@ -99,6 +102,38 @@ export default function ProjectDetailsPage() {
     } catch (error) {
       console.error('Failed to create task', error);
       alert('Gagal mencipta tugasan');
+    }
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('projectId', params.id as string);
+
+    setIsUploading(true);
+    try {
+      await api.post('/documents/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      fetchProjectDetails();
+    } catch (error) {
+      console.error('Upload failed', error);
+      alert('Gagal memuat naik fail');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDeleteDocument = async (id: string) => {
+    if (!confirm('Adakah anda pasti mahu memadam dokumen ini?')) return;
+    try {
+      await api.delete(`/documents/${id}`);
+      fetchProjectDetails();
+    } catch (error) {
+      console.error('Failed to delete document', error);
     }
   };
 
@@ -261,21 +296,98 @@ export default function ProjectDetailsPage() {
         )}
 
         {activeTab === 'files' && (
-          <div className="text-center py-20 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-            <Paperclip className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-slate-900 font-medium">Tiada fail dimuat naik</h3>
-            <p className="text-slate-500 text-sm mt-1">Muat naik dokumen berkaitan projek di sini.</p>
-            <button className="mt-4 px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">
-              Muat Naik Fail
-            </button>
+          <div className="space-y-6">
+            <div className="flex justify-end">
+              <input 
+                type="file" 
+                onChange={handleUpload} 
+                className="hidden" 
+                id="file-upload" 
+                disabled={isUploading}
+              />
+              <label 
+                htmlFor="file-upload"
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors cursor-pointer ${
+                  isUploading ? 'bg-slate-100 text-slate-400' : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                {isUploading ? 'Memuat naik...' : <><Plus className="h-4 w-4" /> Muat Naik Fail</>}
+              </label>
+            </div>
+
+            {project.documents?.length === 0 ? (
+              <div className="text-center py-20 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <Paperclip className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-slate-900 font-medium">Tiada fail dimuat naik</h3>
+                <p className="text-slate-500 text-sm mt-1">Muat naik dokumen berkaitan projek di sini.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {project.documents?.map((doc) => (
+                  <div key={doc.id} className="group relative bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
+                    <button 
+                      onClick={() => handleDeleteDocument(doc.id)}
+                      className="absolute top-2 right-2 p-1 text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                    <div className="h-10 w-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-3">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <h4 className="font-medium text-sm text-slate-900 truncate" title={doc.name}>{doc.name}</h4>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-xs text-slate-500">{(doc.size / 1024).toFixed(0)} KB</span>
+                      <a 
+                        href={`${process.env.NEXT_PUBLIC_API_URL}${doc.url}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-primary hover:underline"
+                      >
+                        Lihat
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === 'activity' && (
-          <div className="text-center py-20 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-            <List className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-slate-900 font-medium">Tiada aktiviti direkodkan</h3>
-            <p className="text-slate-500 text-sm mt-1">Log aktiviti projek akan muncul di sini.</p>
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-slate-900">Aktiviti Projek</h3>
+            {project.activityLogs?.length === 0 ? (
+              <div className="text-center py-20 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <List className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-slate-900 font-medium">Tiada aktiviti direkodkan</h3>
+                <p className="text-slate-500 text-sm mt-1">Log aktiviti projek akan muncul di sini.</p>
+              </div>
+            ) : (
+              <div className="relative border-l border-slate-200 ml-3 space-y-6">
+                {project.activityLogs?.map((log) => (
+                  <div key={log.id} className="ml-6 relative">
+                    <span className="absolute -left-[31px] top-1 h-4 w-4 rounded-full bg-slate-100 border-2 border-white ring-1 ring-slate-200"></span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">{log.action.replace('_', ' ')}</p>
+                        <p className="text-sm text-slate-500 mt-0.5">{log.details}</p>
+                      </div>
+                      <span className="text-xs text-slate-400 mt-1 sm:mt-0 bg-slate-50 px-2 py-1 rounded-full">
+                        {format(new Date(log.createdAt), 'MMM d, h:mm a')}
+                      </span>
+                    </div>
+                    {log.user && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
+                          {log.user.name[0]}
+                        </div>
+                        <span className="text-xs text-slate-500">{log.user.name}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

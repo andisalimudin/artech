@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, Req } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -12,8 +12,8 @@ export class TasksController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new task' })
-  create(@Body() data: any) {
-    return this.tasksService.create(data);
+  create(@Body() data: any, @Req() req) {
+    return this.tasksService.create({ ...data, userId: req.user.userId });
   }
 
   @Get()
@@ -30,8 +30,8 @@ export class TasksController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a task' })
-  update(@Param('id') id: string, @Body() data: any) {
-    return this.tasksService.update(id, data);
+  update(@Param('id') id: string, @Body() data: any, @Req() req) {
+    return this.tasksService.update(id, { ...data, userId: req.user.userId });
   }
 
   @Delete(':id')

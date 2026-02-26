@@ -11,6 +11,8 @@ import { BookkeepingModule } from './bookkeeping/bookkeeping.module';
 import { CmsModule } from './cms/cms.module';
 import { ClientsModule } from './clients/clients.module';
 import { TasksModule } from './tasks/tasks.module';
+import { DocumentsModule } from './documents/documents.module';
+import { ActivityLogsModule } from './activity-logs/activity-logs.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { TasksModule } from './tasks/tasks.module';
     CmsModule,
     ClientsModule,
     TasksModule,
+    DocumentsModule,
+    ActivityLogsModule,
   ],
 })
 export class AppModule {}

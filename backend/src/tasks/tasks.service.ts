@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ActivityLogsService } from '../activity-logs/activity-logs.service';
 import { TaskStatus, Priority } from '@prisma/client';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private activityLogsService: ActivityLogsService
+  ) {}
 
   async create(data: any) {
-    const { projectId, assignedToId, ...rest } = data;
+    const { projectId, assignedToId, userId, ...rest } = data;
     
     // Create Task
     const task = await this.prisma.task.create({
@@ -20,6 +24,14 @@ export class TasksService {
 
     // Update Project Progress
     await this.updateProjectProgress(projectId);
+
+    await this.activityLogsService.log(
+      'TASK_CREATED',
+      `Task "${task.title}" created`,
+      userId,
+      projectId,
+      task.id
+    );
 
     return task;
   }
@@ -56,7 +68,7 @@ export class TasksService {
   }
 
   async update(id: string, data: any) {
-    const { projectId, ...rest } = data;
+    const { projectId, userId, ...rest } = data;
     const task = await this.prisma.task.update({
       where: { id },
       data: rest,
@@ -65,6 +77,16 @@ export class TasksService {
     // Update Project Progress
     if (task.projectId) {
       await this.updateProjectProgress(task.projectId);
+    }
+
+    if (rest.status) {
+      await this.activityLogsService.log(
+        'TASK_STATUS_UPDATED',
+        `Task "${task.title}" status changed to ${rest.status}`,
+        userId,
+        task.projectId,
+        task.id
+      );
     }
 
     return task;

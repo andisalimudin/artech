@@ -79,6 +79,7 @@ model Project {
   tasks       Task[]
   documents   Document[]
   comments    Comment[]
+  activityLogs ActivityLog[]
   quotations  Quotation[]
   invoices    Invoice[]
   expenses    Expense[]
@@ -107,6 +108,7 @@ model Task {
   assignedTo  User?      @relation(fields: [assignedToId], references: [id])
   attachments Attachment[]
   comments    Comment[]
+  activityLogs ActivityLog[]
   subtasks    Subtask[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -296,5 +298,9 @@ model ActivityLog {
   details   String?
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  taskId    String?
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
