@@ -53,8 +53,10 @@ export default function ClientsPage() {
       const response = await api.get(`/clients?t=${new Date().getTime()}`);
       console.log('Fetched clients:', response.data.length);
       setClients(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch clients', error);
+      const message = error.response?.data?.message || error.message || 'Gagal memuat turun senarai pelanggan.';
+      alert(`Gagal memuat turun senarai pelanggan: ${message}`);
     } finally {
       setIsLoading(false);
     }

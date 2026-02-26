@@ -27,15 +27,31 @@ export class ClientsService {
   }
 
   async findAll() {
-    return this.prisma.client.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        projects: true,
-        _count: {
-          select: { projects: true, invoices: true, quotations: true },
+    try {
+      const clients = await this.prisma.client.findMany({
+        orderBy: { createdAt: 'desc' },
+        include: {
+          projects: true,
+          _count: {
+            select: { projects: true, invoices: true, quotations: true },
+          },
         },
-      },
-    });
+      });
+      console.log(`Found ${clients.length} clients`);
+      return clients;
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+      // Fallback: Try fetching without includes if relation fails
+      try {
+        console.log('Retrying fetch without includes...');
+        return await this.prisma.client.findMany({
+          orderBy: { createdAt: 'desc' }
+        });
+      } catch (retryError) {
+        console.error('Retry failed:', retryError);
+        throw retryError;
+      }
+    }
   }
 
   async findOne(id: string) {
