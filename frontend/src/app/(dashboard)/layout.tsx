@@ -46,13 +46,15 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="flex h-screen bg-secondary/10">
+    <div className="flex h-screen bg-slate-50/50">
       {/* Sidebar for Desktop */}
-      <aside className="hidden md:flex w-64 flex-col bg-background border-r">
-        <div className="h-16 flex items-center px-6 border-b">
+      <aside className="hidden md:flex w-64 flex-col bg-white border-r border-slate-200 shadow-sm">
+        <div className="h-16 flex items-center px-6 border-b border-slate-100">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Zap className="h-6 w-6 text-primary" />
-            <span className="font-bold tracking-tight text-xl">AR Innovatech Solution</span>
+            <div className="bg-primary/10 p-1.5 rounded-lg">
+              <Zap className="h-5 w-5 text-primary" />
+            </div>
+            <span className="font-bold tracking-tight text-xl text-slate-800">AR Innovatech</span>
           </Link>
         </div>
         <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
@@ -60,22 +62,22 @@ export default function DashboardLayout({
             <Link 
               key={item.href}
               href={item.href} 
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm ${
                 pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')
-                  ? 'bg-primary/10 text-primary font-medium' 
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-primary text-white shadow-md shadow-primary/25' 
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className={`h-4 w-4 ${pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
               {item.label}
             </Link>
           ))}
           
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors mt-4"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors mt-8 font-medium text-sm group"
           >
-            <LogOut className="h-5 w-5" />
+            <LogOut className="h-4 w-4 text-slate-400 group-hover:text-rose-500" />
             Log Keluar
           </button>
         </nav>
@@ -84,24 +86,24 @@ export default function DashboardLayout({
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <aside className="relative w-64 flex flex-col bg-background h-full shadow-xl animate-in slide-in-from-left">
-            <div className="h-16 flex items-center justify-between px-6 border-b">
-              <span className="font-bold tracking-tight text-xl">Menu</span>
-              <button onClick={() => setIsMobileMenuOpen(false)}>
-                <X className="h-6 w-6" />
+          <div className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
+          <aside className="relative w-72 flex flex-col bg-white h-full shadow-2xl animate-in slide-in-from-left duration-300">
+            <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
+              <span className="font-bold tracking-tight text-xl text-slate-800">Menu</span>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                <X className="h-5 w-5 text-slate-500" />
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+            <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
               {navItems.map((item) => (
                 <Link 
                   key={item.href}
                   href={item.href} 
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
                     pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')
-                      ? 'bg-primary/10 text-primary font-medium' 
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      ? 'bg-primary text-white shadow-lg shadow-primary/20' 
+                      : 'text-slate-600 hover:bg-slate-50'
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
@@ -110,7 +112,7 @@ export default function DashboardLayout({
               ))}
               <button 
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors mt-4"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors mt-8 font-medium"
               >
                 <LogOut className="h-5 w-5" />
                 Log Keluar
@@ -121,11 +123,11 @@ export default function DashboardLayout({
       )}
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50/50">
         {/* Header */}
-        <header className="h-16 bg-background border-b px-6 flex items-center justify-between z-10">
+        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-6 flex items-center justify-between z-10 sticky top-0">
           <button 
-            className="md:hidden p-2 hover:bg-accent rounded-lg"
+            className="md:hidden p-2 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"
             onClick={() => setIsMobileMenuOpen(true)}
           >
             <Menu className="h-6 w-6" />
@@ -133,21 +135,23 @@ export default function DashboardLayout({
           
           {/* Mobile Logo (Centered) */}
           <div className="md:hidden flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" />
-            <span className="font-bold text-lg truncate">AR Innovatech</span>
+            <div className="bg-primary/10 p-1.5 rounded-lg">
+              <Zap className="h-4 w-4 text-primary" />
+            </div>
+            <span className="font-bold text-lg text-slate-800">AR Innovatech</span>
           </div>
 
           <div className="flex items-center gap-4 ml-auto">
-            <button className="p-2 hover:bg-accent rounded-full text-muted-foreground relative">
+            <button className="p-2 hover:bg-slate-100 rounded-full text-slate-500 relative transition-colors">
               <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 h-2 w-2 bg-primary rounded-full border-2 border-background"></span>
+              <span className="absolute top-2.5 right-2.5 h-2 w-2 bg-rose-500 rounded-full border-2 border-white"></span>
             </button>
-            <div className="flex items-center gap-3 pl-4 border-l">
+            <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium leading-none">{user?.name || 'Admin'}</p>
-                <p className="text-xs text-muted-foreground">{user?.email || 'admin@example.com'}</p>
+                <p className="text-sm font-semibold text-slate-800 leading-none">{user?.name || 'Admin'}</p>
+                <p className="text-xs text-slate-500 mt-1">{user?.email || 'admin@example.com'}</p>
               </div>
-              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-primary to-cyan-400 flex items-center justify-center text-white font-bold shadow-sm ring-2 ring-white">
                 {user?.name?.[0] || 'A'}
               </div>
             </div>
@@ -155,8 +159,10 @@ export default function DashboardLayout({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

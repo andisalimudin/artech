@@ -48,8 +48,7 @@ export class BookkeepingService {
   }
 
   async createTransaction(data: any) {
-    // Frontend sends: { date, description, amount, type: 'EXPENSE' | 'INCOME', category }
-    // Backend Transaction model: { date, description, amount, type: 'DEBIT' | 'CREDIT', accountId }
+    // Frontend sends: { date, description, amount, type: 'EXPENSE' | 'INCOME', category, receiptUrl }
     
     // We need to find or create an Account for the category
     let account = await this.prisma.account.findFirst({
@@ -86,9 +85,96 @@ export class BookkeepingService {
         date: new Date(data.date),
         description: data.description,
         amount: data.amount,
-        type: data.type, // Store INCOME/EXPENSE directly as type for simplicity in this app context, or map to DEBIT/CREDIT
+        type: data.type, 
         accountId: account.id,
+        receiptUrl: data.receiptUrl
       },
+    });
+  }
+
+  async updateTransaction(id: string, data: any) {
+    const oldTransaction = await this.prisma.transaction.findUnique({
+      where: { id },
+      include: { account: true }
+    });
+
+    if (!oldTransaction) {
+      throw new Error('Transaction not found');
+    }
+
+    // 1. Reverse old transaction effect
+    await this.prisma.account.update({
+      where: { id: oldTransaction.accountId },
+      data: {
+        balance: {
+          decrement: Number(oldTransaction.amount)
+        }
+      }
+    });
+
+    // 2. Handle new account/category
+    let account = await this.prisma.account.findFirst({
+      where: { name: data.category }
+    });
+
+    if (!account) {
+      const code = `${data.type === 'INCOME' ? '4' : '5'}${Date.now().toString().slice(-4)}`;
+      account = await this.prisma.account.create({
+        data: {
+          name: data.category,
+          code: code,
+          type: data.type,
+          balance: 0
+        }
+      });
+    }
+
+    // 3. Apply new transaction effect
+    await this.prisma.account.update({
+      where: { id: account.id },
+      data: {
+        balance: {
+          increment: Number(data.amount)
+        }
+      }
+    });
+
+    // 4. Update transaction
+    return this.prisma.transaction.update({
+      where: { id },
+      data: {
+        date: new Date(data.date),
+        description: data.description,
+        amount: data.amount,
+        type: data.type,
+        accountId: account.id,
+        receiptUrl: data.receiptUrl
+      }
+    });
+  }
+
+  async deleteTransaction(id: string) {
+    const transaction = await this.prisma.transaction.findUnique({
+      where: { id },
+      include: { account: true }
+    });
+
+    if (!transaction) {
+      throw new Error('Transaction not found');
+    }
+
+    // Reverse account balance
+    await this.prisma.account.update({
+      where: { id: transaction.accountId },
+      data: {
+        balance: {
+          decrement: Number(transaction.amount)
+        }
+      }
+    });
+
+    return this.prisma.transaction.delete({
+      where: { id }
     });
   }
 

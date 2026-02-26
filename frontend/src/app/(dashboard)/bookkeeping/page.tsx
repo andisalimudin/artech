@@ -11,7 +11,9 @@ import {
   Trash2,
   X,
   FileBarChart,
-  Filter
+  Upload,
+  Pencil,
+  ExternalLink
 } from 'lucide-react';
 import api from '@/lib/api';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
@@ -25,6 +27,7 @@ interface Transaction {
   account?: {
     name: string;
   };
+  receiptUrl?: string;
 }
 
 export default function BookkeepingPage() {
@@ -32,6 +35,8 @@ export default function BookkeepingPage() {
   const [stats, setStats] = useState({ income: 0, expenses: 0, net: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState({
     startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
     endDate: format(endOfMonth(new Date()), 'yyyy-MM-dd')
@@ -42,7 +47,8 @@ export default function BookkeepingPage() {
     description: '',
     amount: 0,
     type: 'EXPENSE',
-    category: 'General'
+    category: 'General',
+    receiptUrl: ''
   });
 
   useEffect(() => {
@@ -78,20 +84,76 @@ export default function BookkeepingPage() {
   const handleCreateTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/bookkeeping/transactions', formData);
+      if (editingId) {
+        await api.put(`/bookkeeping/transactions/${editingId}`, formData);
+      } else {
+        await api.post('/bookkeeping/transactions', formData);
+      }
       setShowModal(false);
+      setEditingId(null);
       fetchData();
-      setFormData({
-        date: new Date().toISOString().split('T')[0],
-        description: '',
-        amount: 0,
-        type: 'EXPENSE',
-        category: 'General'
-      });
+      resetForm();
     } catch (error) {
-      console.error('Failed to create transaction', error);
-      alert('Failed to save transaction');
+      console.error('Failed to save transaction', error);
+      alert('Gagal menyimpan transaksi');
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Adakah anda pasti mahu memadam transaksi ini?')) return;
+    try {
+      await api.delete(`/bookkeeping/transactions/${id}`);
+      fetchData();
+    } catch (error) {
+      console.error('Failed to delete transaction', error);
+      alert('Gagal memadam transaksi');
+    }
+  };
+
+  const handleEdit = (tx: Transaction) => {
+    setFormData({
+      date: format(new Date(tx.date), 'yyyy-MM-dd'),
+      description: tx.description,
+      amount: Number(tx.amount),
+      type: tx.type,
+      category: tx.account?.name || 'General',
+      receiptUrl: tx.receiptUrl || ''
+    });
+    setEditingId(tx.id);
+    setShowModal(true);
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
+    const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setIsUploading(true);
+    try {
+      const response = await api.post('/bookkeeping/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setFormData(prev => ({ ...prev, receiptUrl: response.data.url }));
+    } catch (error) {
+      console.error('Upload failed', error);
+      alert('Gagal memuat naik fail');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      date: format(new Date(), 'yyyy-MM-dd'),
+      description: '',
+      amount: 0,
+      type: 'EXPENSE',
+      category: 'General',
+      receiptUrl: ''
+    });
+    setEditingId(null);
   };
 
   const handleExport = () => {
@@ -238,12 +300,12 @@ export default function BookkeepingPage() {
         </div>
       </div>
 
-      {/* Add Transaction Modal */}
+      {/* Add/Edit Transaction Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-background p-6 rounded-lg w-full max-w-md shadow-lg">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Tambah Transaksi</h2>
+              <h2 className="text-xl font-bold">{editingId ? 'Kemaskini Transaksi' : 'Tambah Transaksi'}</h2>
               <button onClick={() => setShowModal(false)}><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleCreateTransaction} className="space-y-4">
@@ -258,7 +320,7 @@ export default function BookkeepingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Jumlah</label>
+                  <label className="text-sm font-medium">Jumlah (RM)</label>
                   <input 
                     type="number"
                     required
@@ -302,6 +364,33 @@ export default function BookkeepingPage() {
                   />
                 </div>
               </div>
+              
+              <div>
+                <label className="text-sm font-medium">Muat Naik Resit</label>
+                <div className="flex items-center gap-2 mt-1">
+                  <input 
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={handleUpload}
+                    className="hidden"
+                    id="receipt-upload"
+                  />
+                  <label 
+                    htmlFor="receipt-upload"
+                    className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md cursor-pointer hover:bg-accent w-full text-sm"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {isUploading ? 'Memuat naik...' : 'Pilih Fail'}
+                  </label>
+                </div>
+                {formData.receiptUrl && (
+                  <p className="text-xs text-emerald-600 mt-1 flex items-center">
+                    <ExternalLink className="h-3 w-3 mr-1" />
+                    Resit dilampirkan
+                  </p>
+                )}
+              </div>
+
               <div className="flex justify-end gap-2 mt-6">
                 <button 
                   type="button"
@@ -312,9 +401,10 @@ export default function BookkeepingPage() {
                 </button>
                 <button 
                   type="submit"
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                  disabled={isUploading}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
                 >
-                  Simpan Transaksi
+                  {editingId ? 'Kemaskini' : 'Simpan'}
                 </button>
               </div>
             </form>
