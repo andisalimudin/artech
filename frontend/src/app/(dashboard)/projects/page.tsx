@@ -69,7 +69,8 @@ export default function ProjectsPage() {
 
   const fetchClients = async () => {
     try {
-      const response = await api.get('/clients');
+      const response = await api.get(`/clients?t=${new Date().getTime()}`);
+      console.log('Fetched clients for project form:', response.data.length);
       setClients(response.data);
     } catch (error) {
       console.error('Failed to fetch clients', error);
@@ -79,11 +80,12 @@ export default function ProjectsPage() {
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.clientId) {
-      alert('Please select a client from the list.');
+      alert('Sila pilih pelanggan dari senarai.');
       return;
     }
     
     try {
+      console.log('Creating project with data:', formData);
       await api.post('/projects', formData);
       setShowModal(false);
       fetchProjects();
@@ -96,10 +98,11 @@ export default function ProjectsPage() {
         startDate: '',
         endDate: ''
       });
+      alert('Projek berjaya dicipta!');
     } catch (error: any) {
       console.error('Failed to create project', error);
       // More detailed error message if available
-      const message = error.response?.data?.message || 'Failed to create project. Please try again.';
+      const message = error.response?.data?.message || 'Gagal mencipta projek. Sila cuba lagi.';
       alert(message);
     }
   };
@@ -239,13 +242,19 @@ export default function ProjectsPage() {
                   value={formData.clientId}
                   onChange={(e) => setFormData({...formData, clientId: e.target.value})}
                 >
-                  <option value="">Pilih pelanggan...</option>
-                  {clients.map(client => (
-                    <option key={client.id} value={client.id}>{client.name}</option>
-                  ))}
+                  <option value="">-- Pilih Pelanggan --</option>
+                  {clients.length > 0 ? (
+                    clients.map(client => (
+                      <option key={client.id} value={client.id}>{client.name}</option>
+                    ))
+                  ) : (
+                    <option disabled>Tiada pelanggan dijumpai</option>
+                  )}
                 </select>
                 {clients.length === 0 && (
-                  <p className="text-xs text-rose-500 mt-1">Tiada pelanggan ditemui. Sila tambah pelanggan dahulu.</p>
+                  <p className="text-xs text-rose-500 mt-1">
+                    Tiada pelanggan dalam sistem. Sila pergi ke halaman Pelanggan untuk menambah data dahulu.
+                  </p>
                 )}
               </div>
               <div>
