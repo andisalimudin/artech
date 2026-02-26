@@ -1,6 +1,4 @@
 # docker-compose.yml
-version: '3.8'
-
 services:
   db:
     image: postgres:15-alpine
@@ -37,11 +35,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: https://arinnovatechsolution.tech/api
+        NEXT_PUBLIC_API_URL: /api
     container_name: artech-frontend
     restart: always
     environment:
-      NEXT_PUBLIC_API_URL: https://arinnovatechsolution.tech/api
+      NEXT_PUBLIC_API_URL: /api
       HOSTNAME: 0.0.0.0
     ports:
       - "3031:3000"
