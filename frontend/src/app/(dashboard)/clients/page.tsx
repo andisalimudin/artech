@@ -69,9 +69,10 @@ export default function ClientsPage() {
         phone: '',
         address: ''
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create client', error);
-      alert('Failed to create client');
+      const message = error.response?.data?.message || 'Gagal mencipta pelanggan baru. Sila pastikan emel unik dan cuba lagi.';
+      alert(message);
     }
   };
 

@@ -26,14 +26,14 @@ export class ClientsController {
   }
 
   @Post()
-  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STAFF)
   @ApiOperation({ summary: 'Create a new client' })
   create(@Body() data: any) {
     return this.clientsService.create(data);
   }
 
   @Put(':id')
-  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STAFF)
   @ApiOperation({ summary: 'Update a client' })
   update(@Param('id') id: string, @Body() data: any) {
     return this.clientsService.update(id, data);
