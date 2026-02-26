@@ -62,7 +62,7 @@ enum Priority {
 
 model Project {
   id          String        @id @default(uuid())
-  code        String        @unique @default(cuid()) // Will be replaced with custom logic
+  code        String?       @unique @default(cuid()) // Made optional to fix migration issue
   name        String
   description String?
   status      ProjectStatus @default(PLANNING)
