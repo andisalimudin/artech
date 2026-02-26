@@ -35,39 +35,56 @@ export class ProjectsService {
   }
 
   async create(data: any) {
-    const { staffs, startDate, endDate, budget, userId, ...rest } = data;
-    
-    // Generate Project Code: P-YYYY-001
-    const year = new Date().getFullYear();
-    const count = await this.prisma.project.count();
-    const code = `P-${year}-${(count + 1).toString().padStart(3, '0')}`;
+    console.log('ProjectsService.create input:', data);
+    try {
+      const { staffs, startDate, endDate, budget, userId, ...rest } = data;
+      
+      // Generate Project Code: P-YYYY-001
+      const year = new Date().getFullYear();
+      const count = await this.prisma.project.count();
+      const code = `P-${year}-${(count + 1).toString().padStart(3, '0')}`;
 
-    // Sanitize dates
-    const validStartDate = startDate ? new Date(startDate) : undefined;
-    const validEndDate = endDate ? new Date(endDate) : undefined;
-    const validBudget = budget ? Number(budget) : 0;
+      // Sanitize dates
+      const validStartDate = startDate ? new Date(startDate) : undefined;
+      const validEndDate = endDate ? new Date(endDate) : undefined;
+      const validBudget = budget ? Number(budget) : 0;
 
-    const project = await this.prisma.project.create({
-      data: {
+      const projectData: any = {
         ...rest,
         code,
         startDate: validStartDate,
         endDate: validEndDate,
         budget: validBudget,
-        staffs: {
-          connect: staffs?.map((id: string) => ({ id })),
-        },
-      },
-    });
+      };
 
-    await this.activityLogsService.log(
-      'PROJECT_CREATED',
-      `Project ${project.name} created`,
-      userId,
-      project.id
-    );
+      if (staffs && Array.isArray(staffs) && staffs.length > 0) {
+        projectData.staffs = {
+          connect: staffs.map((id: string) => ({ id })),
+        };
+      }
 
-    return project;
+      const project = await this.prisma.project.create({
+        data: projectData,
+      });
+
+      try {
+        if (userId) {
+          await this.activityLogsService.log(
+            'PROJECT_CREATED',
+            `Project ${project.name} created`,
+            userId,
+            project.id
+          );
+        }
+      } catch (logError) {
+        console.error('Failed to create activity log:', logError);
+      }
+
+      return project;
+    } catch (error) {
+      console.error('ProjectsService.create error:', error);
+      throw error;
+    }
   }
 
   async update(id: string, data: any) {

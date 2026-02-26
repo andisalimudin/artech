@@ -29,8 +29,15 @@ export class ProjectsController {
   @Post()
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiOperation({ summary: 'Create a new project' })
-  create(@Body() data: any, @Req() req) {
-    return this.projectsService.create({ ...data, userId: req.user.userId });
+  async create(@Body() data: any, @Req() req) {
+    try {
+      console.log('Creating project with data:', data);
+      console.log('User creating project:', req.user);
+      return await this.projectsService.create({ ...data, userId: req.user.userId });
+    } catch (error) {
+      console.error('Error creating project:', error);
+      throw error;
+    }
   }
 
   @Put(':id')
