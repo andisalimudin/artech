@@ -29,8 +29,14 @@ export class ClientsController {
   @Post()
   @Roles(Role.SUPER_ADMIN, Role.ADMIN, Role.STAFF)
   @ApiOperation({ summary: 'Create a new client' })
-  create(@Body() data: CreateClientDto) {
-    return this.clientsService.create(data);
+  async create(@Body() data: CreateClientDto) {
+    console.log('Creating client with data:', data);
+    try {
+      return await this.clientsService.create(data);
+    } catch (error) {
+      console.error('Error creating client in controller:', error);
+      throw error;
+    }
   }
 
   @Put(':id')

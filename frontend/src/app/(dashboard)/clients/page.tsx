@@ -60,6 +60,7 @@ export default function ClientsPage() {
   const handleCreateClient = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      console.log('Sending client data:', formData);
       await api.post('/clients', formData);
       setShowModal(false);
       fetchClients();
@@ -69,9 +70,24 @@ export default function ClientsPage() {
         phone: '',
         address: ''
       });
+      alert('Pelanggan berjaya dicipta!');
     } catch (error: any) {
       console.error('Failed to create client', error);
-      const message = error.response?.data?.message || 'Gagal mencipta pelanggan baru. Sila pastikan emel unik dan cuba lagi.';
+      
+      let message = 'Gagal mencipta pelanggan baru.';
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        message += ` Ralat Server (${error.response.status}): ${error.response.data?.message || error.response.statusText}`;
+      } else if (error.request) {
+        // The request was made but no response was received
+        message += ' Tiada respon dari server. Sila semak sambungan internet atau status server.';
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        message += ` Ralat Permintaan: ${error.message}`;
+      }
+      
       alert(message);
     }
   };
