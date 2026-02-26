@@ -113,21 +113,21 @@ export default function BookkeepingPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Financial Reports</h1>
-          <p className="text-muted-foreground mt-1">Monitor your company's financial health.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Laporan Kewangan</h1>
+          <p className="text-muted-foreground mt-1">Pantau kesihatan kewangan syarikat anda.</p>
         </div>
         <div className="flex gap-2">
           <button 
             onClick={handleExport}
             className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
           >
-            <Download className="mr-2 h-4 w-4" /> Export CSV
+            <Download className="mr-2 h-4 w-4" /> Eksport CSV
           </button>
           <button 
             onClick={() => setShowModal(true)}
             className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
           >
-            <Plus className="mr-2 h-4 w-4" /> Add Transaction
+            <Plus className="mr-2 h-4 w-4" /> Tambah Transaksi
           </button>
         </div>
       </div>
@@ -154,27 +154,27 @@ export default function BookkeepingPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">Total Income</span>
+            <span className="text-sm font-medium text-muted-foreground">Jumlah Pendapatan</span>
             <div className="p-2 rounded-full bg-emerald-100 text-emerald-600">
               <TrendingUp className="h-4 w-4" />
             </div>
           </div>
           <div className="text-2xl font-bold">RM {Number(stats.income).toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground mt-1">For selected period</p>
+          <p className="text-xs text-muted-foreground mt-1">Untuk tempoh terpilih</p>
         </div>
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">Total Expenses</span>
+            <span className="text-sm font-medium text-muted-foreground">Jumlah Perbelanjaan</span>
             <div className="p-2 rounded-full bg-rose-100 text-rose-600">
               <TrendingDown className="h-4 w-4" />
             </div>
           </div>
           <div className="text-2xl font-bold">RM {Number(stats.expenses).toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground mt-1">For selected period</p>
+          <p className="text-xs text-muted-foreground mt-1">Untuk tempoh terpilih</p>
         </div>
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">Net Profit</span>
+            <span className="text-sm font-medium text-muted-foreground">Keuntungan Bersih</span>
             <div className="p-2 rounded-full bg-blue-100 text-blue-600">
               <Wallet className="h-4 w-4" />
             </div>
@@ -182,7 +182,7 @@ export default function BookkeepingPage() {
           <div className={`text-2xl font-bold ${stats.net >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
             RM {Number(stats.net).toLocaleString()}
           </div>
-          <p className="text-xs text-muted-foreground mt-1">For selected period</p>
+          <p className="text-xs text-muted-foreground mt-1">Untuk tempoh terpilih</p>
         </div>
       </div>
 
@@ -191,25 +191,25 @@ export default function BookkeepingPage() {
         <div className="p-6 border-b flex justify-between items-center">
           <h3 className="font-semibold flex items-center gap-2">
             <FileBarChart className="h-4 w-4 text-primary" /> 
-            Recent Transactions
+            Transaksi Terkini
           </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 border-b">
               <tr>
-                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Date</th>
-                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Description</th>
-                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Category</th>
-                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Type</th>
-                <th className="px-6 py-4 text-right font-medium text-muted-foreground">Amount</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Tarikh</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Penerangan</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Kategori</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Jenis</th>
+                <th className="px-6 py-4 text-right font-medium text-muted-foreground">Jumlah</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {isLoading ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center">Loading...</td></tr>
+                <tr><td colSpan={5} className="px-6 py-4 text-center">Memuatkan...</td></tr>
               ) : transactions.length === 0 ? (
-                <tr><td colSpan={5} className="px-6 py-4 text-center">No transactions found for this period.</td></tr>
+                <tr><td colSpan={5} className="px-6 py-4 text-center">Tiada transaksi ditemui untuk tempoh ini.</td></tr>
               ) : transactions.map((tx) => (
                 <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4 text-muted-foreground">{format(new Date(tx.date), 'MMM d, yyyy')}</td>
@@ -243,12 +243,12 @@ export default function BookkeepingPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-background p-6 rounded-lg w-full max-w-md shadow-lg">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Add Transaction</h2>
+              <h2 className="text-xl font-bold">Tambah Transaksi</h2>
               <button onClick={() => setShowModal(false)}><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleCreateTransaction} className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium">Penerangan</label>
                 <input 
                   required
                   className="w-full mt-1 p-2 border rounded-md"
@@ -258,7 +258,7 @@ export default function BookkeepingPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Amount</label>
+                  <label className="text-sm font-medium">Jumlah</label>
                   <input 
                     type="number"
                     required
@@ -270,20 +270,20 @@ export default function BookkeepingPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Type</label>
+                  <label className="text-sm font-medium">Jenis</label>
                   <select 
                     className="w-full mt-1 p-2 border rounded-md"
                     value={formData.type}
                     onChange={(e) => setFormData({...formData, type: e.target.value})}
                   >
-                    <option value="EXPENSE">Expense</option>
-                    <option value="INCOME">Income</option>
+                    <option value="EXPENSE">Perbelanjaan</option>
+                    <option value="INCOME">Pendapatan</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Date</label>
+                  <label className="text-sm font-medium">Tarikh</label>
                   <input 
                     type="date"
                     required
@@ -293,12 +293,12 @@ export default function BookkeepingPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Category</label>
+                  <label className="text-sm font-medium">Kategori</label>
                   <input 
                     className="w-full mt-1 p-2 border rounded-md"
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    placeholder="e.g. Office, Sales"
+                    placeholder="cth. Pejabat, Jualan"
                   />
                 </div>
               </div>
@@ -308,13 +308,13 @@ export default function BookkeepingPage() {
                   onClick={() => setShowModal(false)}
                   className="px-4 py-2 border rounded-md hover:bg-accent"
                 >
-                  Cancel
+                  Batal
                 </button>
                 <button 
                   type="submit"
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                 >
-                  Save Transaction
+                  Simpan Transaksi
                 </button>
               </div>
             </form>

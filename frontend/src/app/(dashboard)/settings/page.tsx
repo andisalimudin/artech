@@ -39,17 +39,17 @@ export default function SettingsPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-          <p className="text-muted-foreground mt-1">Manage your platform and landing page content.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Tetapan</h1>
+          <p className="text-muted-foreground mt-1">Urus platform dan kandungan laman utama anda.</p>
         </div>
         <button 
           onClick={handleSave}
           disabled={isSaving}
           className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 disabled:opacity-50"
         >
-          {isSaving ? 'Saving...' : (
+          {isSaving ? 'Menyimpan...' : (
             <>
-              <Save className="mr-2 h-4 w-4" /> Save Changes
+              <Save className="mr-2 h-4 w-4" /> Simpan Perubahan
             </>
           )}
         </button>
@@ -58,7 +58,7 @@ export default function SettingsPage() {
       {showSuccess && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center gap-3 animate-in slide-in-from-top duration-300">
           <CheckCircle2 className="h-5 w-5" />
-          Settings updated successfully!
+          Tetapan berjaya dikemaskini!
         </div>
       )}
 
@@ -72,7 +72,7 @@ export default function SettingsPage() {
             }`}
           >
             <Layout className="h-4 w-4" />
-            Landing Page CMS
+            CMS Laman Utama
           </button>
           <button 
             onClick={() => setActiveTab('general')}
@@ -81,7 +81,7 @@ export default function SettingsPage() {
             }`}
           >
             <Globe className="h-4 w-4" />
-            General Settings
+            Tetapan Umum
           </button>
         </aside>
 
@@ -93,11 +93,11 @@ export default function SettingsPage() {
               <section className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b">
                   <Type className="h-4 w-4 text-primary" />
-                  <h3 className="font-bold">Hero Section</h3>
+                  <h3 className="font-bold">Seksyen Hero</h3>
                 </div>
                 <div className="grid gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Headline</label>
+                    <label className="text-sm font-medium">Tajuk Utama</label>
                     <input 
                       type="text" 
                       value={cmsData.headline}
@@ -106,7 +106,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Sub-headline</label>
+                    <label className="text-sm font-medium">Sub-tajuk</label>
                     <textarea 
                       value={cmsData.subheadline}
                       onChange={(e) => setCmsData({...cmsData, subheadline: e.target.value})}
@@ -114,7 +114,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">CTA Button Text</label>
+                    <label className="text-sm font-medium">Teks Butang CTA</label>
                     <input 
                       type="text" 
                       value={cmsData.cta}
@@ -129,7 +129,7 @@ export default function SettingsPage() {
 
           {activeTab === 'general' && (
             <div className="text-center py-10 text-muted-foreground">
-              General settings coming soon...
+              Tetapan umum akan datang...
             </div>
           )}
         </div>

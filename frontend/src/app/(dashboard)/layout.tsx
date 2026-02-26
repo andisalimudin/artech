@@ -36,13 +36,13 @@ export default function DashboardLayout({
   };
 
   const navItems = [
-    { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-    { href: '/clients', label: 'Clients', icon: User },
-    { href: '/projects', label: 'Projects', icon: Briefcase },
-    { href: '/quotations', label: 'Quotations', icon: FileText },
-    { href: '/invoices', label: 'Invoices', icon: Receipt },
-    { href: '/bookkeeping', label: 'Financials', icon: PieChart },
-    { href: '/settings', label: 'Settings', icon: Settings },
+    { href: '/dashboard', label: 'Gambaran Keseluruhan', icon: LayoutDashboard },
+    { href: '/clients', label: 'Pelanggan', icon: User },
+    { href: '/projects', label: 'Projek', icon: Briefcase },
+    { href: '/quotations', label: 'Sebut Harga', icon: FileText },
+    { href: '/invoices', label: 'Invois', icon: Receipt },
+    { href: '/bookkeeping', label: 'Kewangan', icon: PieChart },
+    { href: '/settings', label: 'Tetapan', icon: Settings },
   ];
 
   return (
@@ -76,7 +76,7 @@ export default function DashboardLayout({
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors mt-4"
           >
             <LogOut className="h-5 w-5" />
-            Logout
+            Log Keluar
           </button>
         </nav>
       </aside>
@@ -113,7 +113,7 @@ export default function DashboardLayout({
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors mt-4"
               >
                 <LogOut className="h-5 w-5" />
-                Logout
+                Log Keluar
               </button>
             </nav>
           </aside>

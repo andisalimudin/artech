@@ -132,14 +132,14 @@ export default function QuotationsPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quotations</h1>
-          <p className="text-muted-foreground mt-1">Create and manage client price offers.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Sebut Harga</h1>
+          <p className="text-muted-foreground mt-1">Cipta dan urus tawaran harga pelanggan.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
           className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
         >
-          <Plus className="mr-2 h-4 w-4" /> New Quotation
+          <Plus className="mr-2 h-4 w-4" /> Sebut Harga Baru
         </button>
       </div>
 
@@ -149,19 +149,19 @@ export default function QuotationsPage() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 border-b">
               <tr>
-                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Number</th>
-                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Client</th>
-                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Date</th>
-                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Total (Inc. SST)</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Nombor</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Pelanggan</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Tarikh</th>
+                <th className="px-6 py-4 text-left font-medium text-muted-foreground">Jumlah (Termasuk SST)</th>
                 <th className="px-6 py-4 text-left font-medium text-muted-foreground">Status</th>
-                <th className="px-6 py-4 text-right font-medium text-muted-foreground">Actions</th>
+                <th className="px-6 py-4 text-right font-medium text-muted-foreground">Tindakan</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {isLoading ? (
-                <tr><td colSpan={6} className="px-6 py-4 text-center">Loading...</td></tr>
+                <tr><td colSpan={6} className="px-6 py-4 text-center">Memuatkan...</td></tr>
               ) : quotations.length === 0 ? (
-                <tr><td colSpan={6} className="px-6 py-4 text-center">No quotations found.</td></tr>
+                <tr><td colSpan={6} className="px-6 py-4 text-center">Tiada sebut harga ditemui.</td></tr>
               ) : quotations.map((qt) => (
                 <tr key={qt.id} className="hover:bg-slate-50 transition-colors group">
                   <td className="px-6 py-4 font-medium text-primary">{qt.number}</td>
@@ -206,27 +206,27 @@ export default function QuotationsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto">
           <div className="bg-background p-6 rounded-lg w-full max-w-2xl shadow-lg my-10">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">New Quotation</h2>
+              <h2 className="text-xl font-bold">Sebut Harga Baru</h2>
               <button onClick={() => setShowModal(false)}><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleCreateQuotation} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Client</label>
+                  <label className="text-sm font-medium">Pelanggan</label>
                   <select 
                     required
                     className="w-full mt-1 p-2 border rounded-md"
                     value={formData.clientId}
                     onChange={(e) => setFormData({...formData, clientId: e.target.value})}
                   >
-                    <option value="">Select a client...</option>
+                    <option value="">Pilih pelanggan...</option>
                     {clients.map(client => (
                       <option key={client.id} value={client.id}>{client.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Project ID (Optional)</label>
+                  <label className="text-sm font-medium">ID Projek (Pilihan)</label>
                   <input 
                     className="w-full mt-1 p-2 border rounded-md"
                     value={formData.projectId}
@@ -237,7 +237,7 @@ export default function QuotationsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Date</label>
+                  <label className="text-sm font-medium">Tarikh</label>
                   <input 
                     type="date"
                     required
@@ -247,7 +247,7 @@ export default function QuotationsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Expiry Date</label>
+                  <label className="text-sm font-medium">Tarikh Luput</label>
                   <input 
                     type="date"
                     className="w-full mt-1 p-2 border rounded-md"
@@ -258,12 +258,12 @@ export default function QuotationsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Items</label>
+                <label className="text-sm font-medium">Item</label>
                 {formData.items.map((item, index) => (
                   <div key={index} className="flex gap-2 items-end">
                     <div className="flex-1">
                       <input 
-                        placeholder="Description"
+                        placeholder="Penerangan"
                         className="w-full p-2 border rounded-md"
                         value={item.description}
                         onChange={(e) => updateItem(index, 'description', e.target.value)}
@@ -273,7 +273,7 @@ export default function QuotationsPage() {
                     <div className="w-20">
                       <input 
                         type="number"
-                        placeholder="Qty"
+                        placeholder="Kuantiti"
                         className="w-full p-2 border rounded-md"
                         value={item.quantity}
                         onChange={(e) => updateItem(index, 'quantity', Number(e.target.value))}
@@ -284,7 +284,7 @@ export default function QuotationsPage() {
                     <div className="w-32">
                       <input 
                         type="number"
-                        placeholder="Price"
+                        placeholder="Harga"
                         className="w-full p-2 border rounded-md"
                         value={item.unitPrice}
                         onChange={(e) => updateItem(index, 'unitPrice', Number(e.target.value))}
@@ -307,7 +307,7 @@ export default function QuotationsPage() {
                   onClick={addItem}
                   className="text-sm text-primary flex items-center mt-2 hover:underline"
                 >
-                  <Plus className="h-3 w-3 mr-1" /> Add Item
+                  <Plus className="h-3 w-3 mr-1" /> Tambah Item
                 </button>
               </div>
 
@@ -317,13 +317,13 @@ export default function QuotationsPage() {
                   onClick={() => setShowModal(false)}
                   className="px-4 py-2 border rounded-md hover:bg-accent"
                 >
-                  Cancel
+                  Batal
                 </button>
                 <button 
                   type="submit"
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                 >
-                  Create Quotation
+                  Cipta Sebut Harga
                 </button>
               </div>
             </form>

@@ -95,14 +95,14 @@ export default function ClientsPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Clients</h1>
-          <p className="text-muted-foreground mt-1">Manage your customer database and relationships.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Pelanggan</h1>
+          <p className="text-muted-foreground mt-1">Urus pangkalan data pelanggan dan hubungan.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
           className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
         >
-          <Plus className="mr-2 h-4 w-4" /> New Client
+          <Plus className="mr-2 h-4 w-4" /> Pelanggan Baru
         </button>
       </div>
 
@@ -112,7 +112,7 @@ export default function ClientsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input 
             type="text" 
-            placeholder="Search clients..." 
+            placeholder="Cari pelanggan..." 
             className="w-full pl-10 h-10 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -122,7 +122,7 @@ export default function ClientsPage() {
 
       {/* Clients Grid */}
       {isLoading ? (
-        <div className="text-center py-10">Loading clients...</div>
+        <div className="text-center py-10">Memuatkan pelanggan...</div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredClients.map((client) => (
@@ -163,15 +163,15 @@ export default function ClientsPage() {
                 <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t text-center text-xs">
                   <div>
                     <div className="font-bold text-lg">{client._count?.projects || 0}</div>
-                    <div className="text-muted-foreground">Projects</div>
+                    <div className="text-muted-foreground">Projek</div>
                   </div>
                   <div>
                     <div className="font-bold text-lg">{client._count?.quotations || 0}</div>
-                    <div className="text-muted-foreground">Quotes</div>
+                    <div className="text-muted-foreground">Sebut Harga</div>
                   </div>
                   <div>
                     <div className="font-bold text-lg">{client._count?.invoices || 0}</div>
-                    <div className="text-muted-foreground">Invoices</div>
+                    <div className="text-muted-foreground">Invois</div>
                   </div>
                 </div>
                 
@@ -189,12 +189,12 @@ export default function ClientsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-background p-6 rounded-lg w-full max-w-md shadow-lg">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">New Client</h2>
+              <h2 className="text-xl font-bold">Pelanggan Baru</h2>
               <button onClick={() => setShowModal(false)}><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleCreateClient} className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Company Name</label>
+                <label className="text-sm font-medium">Nama Syarikat</label>
                 <input 
                   required
                   className="w-full mt-1 p-2 border rounded-md"
@@ -234,13 +234,13 @@ export default function ClientsPage() {
                   onClick={() => setShowModal(false)}
                   className="px-4 py-2 border rounded-md hover:bg-accent"
                 >
-                  Cancel
+                  Batal
                 </button>
                 <button 
                   type="submit"
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                 >
-                  Create Client
+                  Cipta Pelanggan
                 </button>
               </div>
             </form>

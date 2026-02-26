@@ -124,14 +124,14 @@ export default function ProjectsPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Project Management</h1>
-          <p className="text-muted-foreground mt-1">Manage and track your technology projects efficiently.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Pengurusan Projek</h1>
+          <p className="text-muted-foreground mt-1">Urus dan jejak projek teknologi anda dengan cekap.</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
           className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
         >
-          <Plus className="mr-2 h-4 w-4" /> New Project
+          <Plus className="mr-2 h-4 w-4" /> Projek Baru
         </button>
       </div>
 
@@ -141,7 +141,7 @@ export default function ProjectsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input 
             type="text" 
-            placeholder="Search projects or clients..." 
+            placeholder="Cari projek atau pelanggan..." 
             className="w-full pl-10 h-10 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -151,7 +151,7 @@ export default function ProjectsPage() {
 
       {/* Projects Grid */}
       {isLoading ? (
-        <div className="text-center py-10">Loading projects...</div>
+        <div className="text-center py-10">Memuatkan projek...</div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
@@ -178,13 +178,13 @@ export default function ProjectsPage() {
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   <Users className="inline h-3 w-3 mr-1" />
-                  {project.client?.name || 'Unknown Client'}
+                  {project.client?.name || 'Pelanggan Tidak Diketahui'}
                 </p>
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground flex items-center">
-                      <BarChart2 className="mr-2 h-4 w-4" /> Progress
+                      <BarChart2 className="mr-2 h-4 w-4" /> Kemajuan
                     </span>
                     <span className="font-medium">{project.progress}%</span>
                   </div>
@@ -198,7 +198,7 @@ export default function ProjectsPage() {
                   <div className="pt-4 border-t flex items-center justify-between text-sm">
                     <div className="flex items-center text-muted-foreground">
                       <Calendar className="mr-2 h-4 w-4" />
-                      {project.endDate ? format(new Date(project.endDate), 'MMM d, yyyy') : 'No Deadline'}
+                      {project.endDate ? format(new Date(project.endDate), 'MMM d, yyyy') : 'Tiada Tarikh Akhir'}
                     </div>
                     <div className="font-medium">
                       RM {Number(project.budget).toLocaleString()}
@@ -216,12 +216,12 @@ export default function ProjectsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-background p-6 rounded-lg w-full max-w-lg shadow-lg">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">New Project</h2>
+              <h2 className="text-xl font-bold">Projek Baru</h2>
               <button onClick={() => setShowModal(false)}><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Project Name</label>
+                <label className="text-sm font-medium">Nama Projek</label>
                 <input 
                   required
                   className="w-full mt-1 p-2 border rounded-md"
@@ -230,24 +230,24 @@ export default function ProjectsPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Client</label>
+                <label className="text-sm font-medium">Pelanggan</label>
                 <select 
                   required
                   className="w-full mt-1 p-2 border rounded-md"
                   value={formData.clientId}
                   onChange={(e) => setFormData({...formData, clientId: e.target.value})}
                 >
-                  <option value="">Select a client...</option>
+                  <option value="">Pilih pelanggan...</option>
                   {clients.map(client => (
                     <option key={client.id} value={client.id}>{client.name}</option>
                   ))}
                 </select>
                 {clients.length === 0 && (
-                  <p className="text-xs text-rose-500 mt-1">No clients found. Please add a client first.</p>
+                  <p className="text-xs text-rose-500 mt-1">Tiada pelanggan ditemui. Sila tambah pelanggan dahulu.</p>
                 )}
               </div>
               <div>
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium">Penerangan</label>
                 <textarea 
                   className="w-full mt-1 p-2 border rounded-md"
                   value={formData.description}
@@ -256,7 +256,7 @@ export default function ProjectsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Budget (RM)</label>
+                  <label className="text-sm font-medium">Bajet (RM)</label>
                   <input 
                     type="number"
                     className="w-full mt-1 p-2 border rounded-md"
@@ -271,15 +271,15 @@ export default function ProjectsPage() {
                     value={formData.status}
                     onChange={(e) => setFormData({...formData, status: e.target.value})}
                   >
-                    <option value="PLANNING">Planning</option>
-                    <option value="ONGOING">Ongoing</option>
-                    <option value="COMPLETED">Completed</option>
+                    <option value="PLANNING">Perancangan</option>
+                    <option value="ONGOING">Sedang Berjalan</option>
+                    <option value="COMPLETED">Selesai</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Start Date</label>
+                  <label className="text-sm font-medium">Tarikh Mula</label>
                   <input 
                     type="date"
                     className="w-full mt-1 p-2 border rounded-md"
@@ -288,7 +288,7 @@ export default function ProjectsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">End Date</label>
+                  <label className="text-sm font-medium">Tarikh Tamat</label>
                   <input 
                     type="date"
                     className="w-full mt-1 p-2 border rounded-md"
@@ -304,13 +304,13 @@ export default function ProjectsPage() {
                   onClick={() => setShowModal(false)}
                   className="px-4 py-2 border rounded-md hover:bg-accent"
                 >
-                  Cancel
+                  Batal
                 </button>
                 <button 
                   type="submit"
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
                 >
-                  Create Project
+                  Cipta Projek
                 </button>
               </div>
             </form>

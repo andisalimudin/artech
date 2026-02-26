@@ -35,16 +35,16 @@ export default function LandingPage() {
         </Link>
         <nav className="ml-auto flex gap-8 items-center hidden md:flex">
           <Link className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors" href="#services">
-            Services
+            Perkhidmatan
           </Link>
           <Link className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors" href="#about">
-            About
+            Tentang Kami
           </Link>
           <Link className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors" href="#process">
-            Process
+            Proses
           </Link>
           <Link className="text-sm font-medium px-6 py-2.5 rounded-full bg-cyan-600 text-white hover:bg-cyan-500 transition-all shadow-lg hover:shadow-cyan-500/25 transform hover:-translate-y-0.5" href="/login">
-            Login
+            Log Masuk
           </Link>
         </nav>
       </header>
@@ -61,24 +61,24 @@ export default function LandingPage() {
             <div className="flex flex-col items-center space-y-8 text-center max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000">
               <div className="inline-flex items-center rounded-full border border-cyan-500/30 px-4 py-1.5 text-sm font-medium text-cyan-400 bg-cyan-500/10">
                 <span className="flex h-2 w-2 rounded-full bg-cyan-400 mr-2 animate-pulse"></span>
-                Innovating Digital Solutions for the Future
+                Inovasi Penyelesaian Digital untuk Masa Depan
               </div>
               
               <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-white leading-[1.1]">
-                Transform Your Business with <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Smart IT Solutions</span>
+                Transformasi Perniagaan Anda dengan <br className="hidden md:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Penyelesaian IT Pintar</span>
               </h1>
               
               <p className="mx-auto max-w-[700px] text-slate-400 md:text-xl leading-relaxed">
-                We build powerful websites, systems, and digital solutions tailored for your business growth. Elevate your operations with our cutting-edge technology.
+                Kami membina laman web, sistem, dan penyelesaian digital yang hebat khusus untuk pertumbuhan perniagaan anda. Tingkatkan operasi anda dengan teknologi terkini kami.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link href="#contact" className="inline-flex h-12 items-center justify-center rounded-full bg-cyan-600 px-8 text-base font-medium text-white shadow-lg shadow-cyan-500/20 transition-all hover:bg-cyan-500 hover:shadow-cyan-500/40 hover:-translate-y-1">
-                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                  Mula Sekarang <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link href="#services" className="inline-flex h-12 items-center justify-center rounded-full border border-slate-700 bg-slate-800/50 px-8 text-base font-medium text-slate-200 shadow-sm transition-all hover:bg-slate-800 hover:border-slate-600">
-                  Our Services
+                  Perkhidmatan Kami
                 </Link>
               </div>
             </div>
@@ -90,15 +90,15 @@ export default function LandingPage() {
           <div className="container px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white">Who We Are</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white">Siapa Kami</h2>
                 <p className="text-slate-400 text-lg leading-relaxed">
-                  AR Innovatech Solution is a forward-thinking technology partner dedicated to empowering businesses through digital transformation. We don't just build systems; we engineer growth.
+                  AR Innovatech Solution adalah rakan teknologi berwawasan yang berdedikasi untuk memperkasakan perniagaan melalui transformasi digital. Kami bukan sekadar membina sistem; kami menjana pertumbuhan.
                 </p>
                 <p className="text-slate-400 text-lg leading-relaxed">
-                  Our team of experts combines technical prowess with strategic insight to deliver solutions that are not only robust and scalable but also aligned with your long-term business goals.
+                  Pasukan pakar kami menggabungkan kehebatan teknikal dengan wawasan strategik untuk menyampaikan penyelesaian yang bukan sahaja teguh dan berskala tetapi juga selaras dengan matlamat jangka panjang perniagaan anda.
                 </p>
                 <div className="flex flex-col gap-3 pt-4">
-                  {['Client-Centric Approach', 'Innovative Technology Stack', 'Reliable Support System'].map((item) => (
+                  {['Pendekatan Berpusatkan Pelanggan', 'Teknologi Inovatif', 'Sistem Sokongan Dipercayai'].map((item) => (
                     <div key={item} className="flex items-center gap-3">
                       <CheckCircle2 className="h-5 w-5 text-cyan-400" />
                       <span className="text-slate-300">{item}</span>
@@ -113,22 +113,22 @@ export default function LandingPage() {
                     <div className="p-4 bg-slate-800 rounded-xl border border-slate-700">
                       <Users className="h-8 w-8 text-cyan-400 mb-3" />
                       <div className="text-2xl font-bold text-white">50+</div>
-                      <div className="text-sm text-slate-400">Happy Clients</div>
+                      <div className="text-sm text-slate-400">Pelanggan Gembira</div>
                     </div>
                     <div className="p-4 bg-slate-800 rounded-xl border border-slate-700">
                       <Code className="h-8 w-8 text-blue-400 mb-3" />
                       <div className="text-2xl font-bold text-white">100+</div>
-                      <div className="text-sm text-slate-400">Projects Done</div>
+                      <div className="text-sm text-slate-400">Projek Selesai</div>
                     </div>
                     <div className="p-4 bg-slate-800 rounded-xl border border-slate-700">
                       <Server className="h-8 w-8 text-indigo-400 mb-3" />
                       <div className="text-2xl font-bold text-white">99.9%</div>
-                      <div className="text-sm text-slate-400">Uptime</div>
+                      <div className="text-sm text-slate-400">Masa Operasi</div>
                     </div>
                     <div className="p-4 bg-slate-800 rounded-xl border border-slate-700">
                       <Globe className="h-8 w-8 text-emerald-400 mb-3" />
                       <div className="text-2xl font-bold text-white">24/7</div>
-                      <div className="text-sm text-slate-400">Support</div>
+                      <div className="text-sm text-slate-400">Sokongan</div>
                     </div>
                   </div>
                 </div>
@@ -141,41 +141,41 @@ export default function LandingPage() {
         <section id="services" className="w-full py-24 bg-slate-900">
           <div className="container px-4 md:px-6">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white mb-4">Our Services</h2>
-              <p className="text-slate-400 text-lg">Comprehensive IT solutions tailored to drive your business forward in the digital age.</p>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white mb-4">Perkhidmatan Kami</h2>
+              <p className="text-slate-400 text-lg">Penyelesaian IT komprehensif yang disesuaikan untuk memacu perniagaan anda ke hadapan dalam era digital.</p>
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
                   icon: Layout,
-                  title: "Website Development",
-                  description: "Stunning, responsive, and high-performance websites that leave a lasting impression."
+                  title: "Pembangunan Laman Web",
+                  description: "Laman web yang menawan, responsif, dan berprestasi tinggi yang meninggalkan kesan mendalam."
                 },
                 {
                   icon: Code,
-                  title: "Custom System Development",
-                  description: "Tailor-made software solutions designed specifically to address your unique business challenges."
+                  title: "Pembangunan Sistem Tersuai",
+                  description: "Penyelesaian perisian tersuai yang direka khusus untuk menangani cabaran perniagaan unik anda."
                 },
                 {
                   icon: BarChart3,
-                  title: "Business Management Systems",
-                  description: "Streamline operations with integrated ERP, CRM, and management tools."
+                  title: "Sistem Pengurusan Perniagaan",
+                  description: "Perkemaskan operasi dengan alat ERP, CRM, dan pengurusan bersepadu."
                 },
                 {
                   icon: Globe,
-                  title: "Web Application Development",
-                  description: "Scalable and secure cloud-based applications accessible from anywhere."
+                  title: "Pembangunan Aplikasi Web",
+                  description: "Aplikasi berasaskan awan yang berskala dan selamat yang boleh diakses dari mana-mana."
                 },
                 {
                   icon: Server,
-                  title: "Server & Cloud Setup",
-                  description: "Robust infrastructure setup, maintenance, and optimization for maximum uptime."
+                  title: "Persediaan Pelayan & Awan",
+                  description: "Persediaan infrastruktur yang teguh, penyelenggaraan, dan pengoptimuman untuk masa operasi maksimum."
                 },
                 {
                   icon: MessageSquare,
-                  title: "IT Consulting & Support",
-                  description: "Expert guidance and ongoing technical support to keep your business running smoothly."
+                  title: "Perundingan & Sokongan IT",
+                  description: "Panduan pakar dan sokongan teknikal berterusan untuk memastikan perniagaan anda berjalan lancar."
                 }
               ].map((service, index) => (
                 <div key={index} className="group p-6 bg-slate-800/50 rounded-2xl border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-800 transition-all duration-300">
@@ -194,16 +194,16 @@ export default function LandingPage() {
         <section className="w-full py-24 bg-gradient-to-b from-slate-900 to-slate-800 border-y border-slate-800">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white mb-4">Why Choose Us</h2>
-              <p className="text-slate-400">We deliver excellence through innovation and dedication.</p>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white mb-4">Kenapa Pilih Kami</h2>
+              <p className="text-slate-400">Kami menyampaikan kecemerlangan melalui inovasi dan dedikasi.</p>
             </div>
             
             <div className="grid md:grid-cols-4 gap-8">
               {[
-                { title: "Experienced Team", desc: "Skilled professionals with years of industry expertise." },
-                { title: "Customizable Solutions", desc: "Flexible systems adapted to your specific needs." },
-                { title: "Affordable & Scalable", desc: "Cost-effective solutions that grow with your business." },
-                { title: "Ongoing Support", desc: "Reliable technical assistance whenever you need it." }
+                { title: "Pasukan Berpengalaman", desc: "Profesional mahir dengan pengalaman industri bertahun-tahun." },
+                { title: "Penyelesaian Boleh Ubah Suai", desc: "Sistem fleksibel yang disesuaikan dengan keperluan khusus anda." },
+                { title: "Mampu Milik & Berskala", desc: "Penyelesaian kos efektif yang berkembang dengan perniagaan anda." },
+                { title: "Sokongan Berterusan", desc: "Bantuan teknikal yang boleh dipercayai bila-bila masa anda memerlukannya." }
               ].map((item, i) => (
                 <div key={i} className="text-center p-6 bg-slate-900 rounded-xl border border-slate-800 hover:border-cyan-500/30 transition-colors">
                   <div className="mx-auto h-12 w-12 bg-cyan-500/10 rounded-full flex items-center justify-center mb-4">
@@ -221,17 +221,17 @@ export default function LandingPage() {
         <section id="process" className="w-full py-24 bg-slate-900">
           <div className="container px-4 md:px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white mb-4">Our Process</h2>
-              <p className="text-slate-400">A streamlined approach to delivering success.</p>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white mb-4">Proses Kami</h2>
+              <p className="text-slate-400">Pendekatan yang diperkemas untuk memberikan kejayaan.</p>
             </div>
             
             <div className="grid md:grid-cols-4 gap-8 relative">
               <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-800 -z-10 transform -translate-y-1/2"></div>
               {[
-                { step: "01", title: "Consultation", desc: "Understanding your requirements." },
-                { step: "02", title: "Planning", desc: "Designing the perfect solution." },
-                { step: "03", title: "Development", desc: "Building with precision." },
-                { step: "04", title: "Deployment", desc: "Launching and support." }
+                { step: "01", title: "Perundingan", desc: "Memahami keperluan anda." },
+                { step: "02", title: "Perancangan", desc: "Mereka bentuk penyelesaian yang sempurna." },
+                { step: "03", title: "Pembangunan", desc: "Membina dengan ketepatan." },
+                { step: "04", title: "Pelancaran", desc: "Pelancaran dan sokongan." }
               ].map((item, i) => (
                 <div key={i} className="relative bg-slate-900 p-6 rounded-xl border border-slate-800 text-center">
                   <div className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-4 border-4 border-slate-900">
@@ -250,8 +250,8 @@ export default function LandingPage() {
           <div className="container px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-12">
               <div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white mb-6">Get In Touch</h2>
-                <p className="text-slate-400 mb-8">Ready to transform your business? Contact us today for a free consultation.</p>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-white mb-6">Hubungi Kami</h2>
+                <p className="text-slate-400 mb-8">Bersedia untuk mengubah perniagaan anda? Hubungi kami hari ini untuk konsultasi percuma.</p>
                 
                 <div className="space-y-4">
                   <div className="flex items-center gap-4 text-slate-300">
@@ -259,7 +259,7 @@ export default function LandingPage() {
                       <MessageSquare className="h-5 w-5 text-cyan-400" />
                     </div>
                     <div>
-                      <div className="font-medium text-white">Email Us</div>
+                      <div className="font-medium text-white">Emel Kami</div>
                       <div className="text-sm text-slate-400">contact@arinnovatechsolution.tech</div>
                     </div>
                   </div>
@@ -268,7 +268,7 @@ export default function LandingPage() {
                       <Smartphone className="h-5 w-5 text-cyan-400" />
                     </div>
                     <div>
-                      <div className="font-medium text-white">Call Us</div>
+                      <div className="font-medium text-white">Hubungi Kami</div>
                       <div className="text-sm text-slate-400">+60 12-345 6789</div>
                     </div>
                   </div>
@@ -279,24 +279,24 @@ export default function LandingPage() {
                 <form className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-slate-400">Name</label>
+                      <label className="text-sm font-medium text-slate-400">Nama</label>
                       <input className="w-full h-10 rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="John Doe" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-slate-400">Phone</label>
+                      <label className="text-sm font-medium text-slate-400">Telefon</label>
                       <input className="w-full h-10 rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="+60..." />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400">Email</label>
+                    <label className="text-sm font-medium text-slate-400">Emel</label>
                     <input className="w-full h-10 rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="john@example.com" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400">Message</label>
-                    <textarea className="w-full min-h-[120px] rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="Tell us about your project..." />
+                    <label className="text-sm font-medium text-slate-400">Mesej</label>
+                    <textarea className="w-full min-h-[120px] rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="Beritahu kami tentang projek anda..." />
                   </div>
                   <button className="w-full h-10 rounded-md bg-cyan-600 text-white font-medium hover:bg-cyan-500 transition-colors">
-                    Send Message
+                    Hantar Mesej
                   </button>
                 </form>
               </div>
@@ -315,20 +315,20 @@ export default function LandingPage() {
                 <span className="text-xl font-bold text-white">AR Innovatech Solution</span>
               </Link>
               <p className="max-w-xs leading-relaxed">
-                Empowering businesses with innovative digital solutions. Building the future of technology, today.
+                Memperkasakan perniagaan dengan penyelesaian digital inovatif. Membina masa depan teknologi, hari ini.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-white mb-4">Quick Links</h3>
+              <h3 className="font-semibold text-white mb-4">Pautan Pantas</h3>
               <ul className="space-y-2">
-                <li><Link href="#services" className="hover:text-cyan-400 transition-colors">Services</Link></li>
-                <li><Link href="#about" className="hover:text-cyan-400 transition-colors">About Us</Link></li>
-                <li><Link href="#process" className="hover:text-cyan-400 transition-colors">Process</Link></li>
-                <li><Link href="#contact" className="hover:text-cyan-400 transition-colors">Contact</Link></li>
+                <li><Link href="#services" className="hover:text-cyan-400 transition-colors">Perkhidmatan</Link></li>
+                <li><Link href="#about" className="hover:text-cyan-400 transition-colors">Tentang Kami</Link></li>
+                <li><Link href="#process" className="hover:text-cyan-400 transition-colors">Proses</Link></li>
+                <li><Link href="#contact" className="hover:text-cyan-400 transition-colors">Hubungi</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-white mb-4">Connect</h3>
+              <h3 className="font-semibold text-white mb-4">Hubungi</h3>
               <ul className="space-y-2">
                 <li><Link href="#" className="hover:text-cyan-400 transition-colors">Facebook</Link></li>
                 <li><Link href="#" className="hover:text-cyan-400 transition-colors">Twitter</Link></li>
@@ -338,10 +338,10 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>© 2024 AR Innovatech Solution. All rights reserved.</p>
+            <p>© 2024 AR Innovatech Solution. Hak cipta terpelihara.</p>
             <div className="flex gap-6">
-              <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
+              <Link href="#" className="hover:text-white transition-colors">Dasar Privasi</Link>
+              <Link href="#" className="hover:text-white transition-colors">Terma Perkhidmatan</Link>
             </div>
           </div>
         </div>
