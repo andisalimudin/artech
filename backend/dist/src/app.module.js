@@ -17,6 +17,7 @@ const quotations_module_1 = require("./quotations/quotations.module");
 const expenses_module_1 = require("./expenses/expenses.module");
 const bookkeeping_module_1 = require("./bookkeeping/bookkeeping.module");
 const cms_module_1 = require("./cms/cms.module");
+const clients_module_1 = require("./clients/clients.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -32,6 +33,7 @@ exports.AppModule = AppModule = __decorate([
             expenses_module_1.ExpensesModule,
             bookkeeping_module_1.BookkeepingModule,
             cms_module_1.CmsModule,
+            clients_module_1.ClientsModule,
         ],
     })
 ], AppModule);

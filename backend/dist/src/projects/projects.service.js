@@ -39,18 +39,24 @@ let ProjectsService = class ProjectsService {
         });
     }
     async create(data) {
-        const { staffs } = data, rest = __rest(data, ["staffs"]);
+        const { staffs, startDate, endDate, budget } = data, rest = __rest(data, ["staffs", "startDate", "endDate", "budget"]);
+        const validStartDate = startDate ? new Date(startDate) : undefined;
+        const validEndDate = endDate ? new Date(endDate) : undefined;
+        const validBudget = budget ? Number(budget) : 0;
         return this.prisma.project.create({
-            data: Object.assign(Object.assign({}, rest), { staffs: {
+            data: Object.assign(Object.assign({}, rest), { startDate: validStartDate, endDate: validEndDate, budget: validBudget, staffs: {
                     connect: staffs === null || staffs === void 0 ? void 0 : staffs.map((id) => ({ id })),
                 } }),
         });
     }
     async update(id, data) {
-        const { staffs } = data, rest = __rest(data, ["staffs"]);
+        const { staffs, startDate, endDate, budget } = data, rest = __rest(data, ["staffs", "startDate", "endDate", "budget"]);
+        const validStartDate = startDate ? new Date(startDate) : undefined;
+        const validEndDate = endDate ? new Date(endDate) : undefined;
+        const validBudget = (budget !== undefined && budget !== null) ? Number(budget) : undefined;
         return this.prisma.project.update({
             where: { id },
-            data: Object.assign(Object.assign({}, rest), { staffs: {
+            data: Object.assign(Object.assign({}, rest), { startDate: validStartDate, endDate: validEndDate, budget: validBudget, staffs: {
                     set: staffs === null || staffs === void 0 ? void 0 : staffs.map((id) => ({ id })),
                 } }),
         });

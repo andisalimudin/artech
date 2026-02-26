@@ -21,10 +21,21 @@ export class ProjectsService {
   }
 
   async create(data: any) {
-    const { staffs, ...rest } = data;
+    const { staffs, startDate, endDate, budget, ...rest } = data;
+    
+    // Sanitize dates: Convert empty strings to null, valid strings to Date
+    const validStartDate = startDate ? new Date(startDate) : undefined;
+    const validEndDate = endDate ? new Date(endDate) : undefined;
+    
+    // Sanitize budget
+    const validBudget = budget ? Number(budget) : 0;
+
     return this.prisma.project.create({
       data: {
         ...rest,
+        startDate: validStartDate,
+        endDate: validEndDate,
+        budget: validBudget,
         staffs: {
           connect: staffs?.map((id: string) => ({ id })),
         },
@@ -33,11 +44,19 @@ export class ProjectsService {
   }
 
   async update(id: string, data: any) {
-    const { staffs, ...rest } = data;
+    const { staffs, startDate, endDate, budget, ...rest } = data;
+    
+    const validStartDate = startDate ? new Date(startDate) : undefined;
+    const validEndDate = endDate ? new Date(endDate) : undefined;
+    const validBudget = (budget !== undefined && budget !== null) ? Number(budget) : undefined;
+
     return this.prisma.project.update({
       where: { id },
       data: {
         ...rest,
+        startDate: validStartDate,
+        endDate: validEndDate,
+        budget: validBudget,
         staffs: {
           set: staffs?.map((id: string) => ({ id })),
         },

@@ -24,29 +24,87 @@ export declare class BookkeepingController {
     } & {
         id: string;
         createdAt: Date;
+        updatedAt: Date;
         type: string;
         description: string;
         date: Date;
         amount: import("@prisma/client/runtime/library").Decimal;
+        receiptUrl: string | null;
         accountId: string;
     })[]>;
     createTransaction(data: any): Promise<{
         id: string;
         createdAt: Date;
+        updatedAt: Date;
         type: string;
         description: string;
         date: Date;
         amount: import("@prisma/client/runtime/library").Decimal;
+        receiptUrl: string | null;
         accountId: string;
     }>;
+    updateTransaction(id: string, data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string;
+        description: string;
+        date: Date;
+        amount: import("@prisma/client/runtime/library").Decimal;
+        receiptUrl: string | null;
+        accountId: string;
+    }>;
+    deleteTransaction(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string;
+        description: string;
+        date: Date;
+        amount: import("@prisma/client/runtime/library").Decimal;
+        receiptUrl: string | null;
+        accountId: string;
+    }>;
+    uploadFile(file: Express.Multer.File): {
+        url: string;
+    };
     getProfitAndLoss(startDate: string, endDate: string): Promise<{
-        totalIncome: number;
-        totalExpense: number;
+        startDate: Date;
+        endDate: Date;
+        income: number;
+        expenses: number;
         netProfit: number;
     }>;
     getBalanceSheet(date: string): Promise<{
-        totalAssets: number | import("@prisma/client/runtime/library").Decimal;
-        totalLiabilities: number | import("@prisma/client/runtime/library").Decimal;
-        totalEquity: number | import("@prisma/client/runtime/library").Decimal;
+        assets: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            code: string;
+            type: string;
+            balance: import("@prisma/client/runtime/library").Decimal;
+        }[];
+        liabilities: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            code: string;
+            type: string;
+            balance: import("@prisma/client/runtime/library").Decimal;
+        }[];
+        equity: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            code: string;
+            type: string;
+            balance: import("@prisma/client/runtime/library").Decimal;
+        }[];
+        totalAssets: number;
+        totalLiabilities: number;
+        totalEquity: number;
     }>;
 }

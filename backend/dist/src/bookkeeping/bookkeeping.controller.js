@@ -14,6 +14,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookkeepingController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 const bookkeeping_service_1 = require("./bookkeeping.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const roles_guard_1 = require("../auth/roles.guard");
@@ -32,6 +35,15 @@ let BookkeepingController = class BookkeepingController {
     }
     createTransaction(data) {
         return this.bookkeepingService.createTransaction(data);
+    }
+    updateTransaction(id, data) {
+        return this.bookkeepingService.updateTransaction(id, data);
+    }
+    deleteTransaction(id) {
+        return this.bookkeepingService.deleteTransaction(id);
+    }
+    uploadFile(file) {
+        return { url: `/uploads/${file.filename}` };
     }
     getProfitAndLoss(startDate, endDate) {
         return this.bookkeepingService.getProfitAndLoss(startDate, endDate);
@@ -65,6 +77,55 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], BookkeepingController.prototype, "createTransaction", null);
+__decorate([
+    (0, common_1.Put)('transactions/:id'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Update a transaction' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], BookkeepingController.prototype, "updateTransaction", null);
+__decorate([
+    (0, common_1.Delete)('transactions/:id'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete a transaction' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], BookkeepingController.prototype, "deleteTransaction", null);
+__decorate([
+    (0, common_1.Post)('upload'),
+    (0, roles_decorator_1.Roles)(client_1.Role.SUPER_ADMIN, client_1.Role.ADMIN),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: (req, file, cb) => {
+                const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+                return cb(null, `${randomName}${(0, path_1.extname)(file.originalname)}`);
+            },
+        }),
+    })),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiOperation)({ summary: 'Upload a receipt file' }),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], BookkeepingController.prototype, "uploadFile", null);
 __decorate([
     (0, common_1.Get)('reports/pnl'),
     (0, swagger_1.ApiOperation)({ summary: 'Get Profit and Loss report' }),

@@ -19,64 +19,169 @@ let BookkeepingService = class BookkeepingService {
     async getAccounts() {
         return this.prisma.account.findMany();
     }
-    async getTransactions(filters) {
-        const { startDate, endDate, accountId } = filters;
+    async getTransactions(query) {
+        const { startDate, endDate, type, category } = query;
+        const where = {};
+        if (startDate && endDate) {
+            where.date = {
+                gte: new Date(startDate),
+                lte: new Date(endDate),
+            };
+        }
+        if (type) {
+            where.type = type;
+        }
         return this.prisma.transaction.findMany({
-            where: {
-                date: {
-                    gte: startDate ? new Date(startDate) : undefined,
-                    lte: endDate ? new Date(endDate) : undefined,
-                },
-                accountId,
-            },
-            include: { account: true },
+            where,
+            orderBy: { date: 'desc' },
+            include: { account: true }
         });
     }
     async createTransaction(data) {
+        let account = await this.prisma.account.findFirst({
+            where: { name: data.category }
+        });
+        if (!account) {
+            const code = `${data.type === 'INCOME' ? '4' : '5'}${Date.now().toString().slice(-4)}`;
+            account = await this.prisma.account.create({
+                data: {
+                    name: data.category,
+                    code: code,
+                    type: data.type,
+                    balance: 0
+                }
+            });
+        }
+        const amount = Number(data.amount);
+        await this.prisma.account.update({
+            where: { id: account.id },
+            data: {
+                balance: {
+                    increment: amount
+                }
+            }
+        });
         return this.prisma.transaction.create({
-            data,
+            data: {
+                date: new Date(data.date),
+                description: data.description,
+                amount: data.amount,
+                type: data.type,
+                accountId: account.id,
+                receiptUrl: data.receiptUrl
+            },
+        });
+    }
+    async updateTransaction(id, data) {
+        const oldTransaction = await this.prisma.transaction.findUnique({
+            where: { id },
+            include: { account: true }
+        });
+        if (!oldTransaction) {
+            throw new Error('Transaction not found');
+        }
+        await this.prisma.account.update({
+            where: { id: oldTransaction.accountId },
+            data: {
+                balance: {
+                    decrement: Number(oldTransaction.amount)
+                }
+            }
+        });
+        let account = await this.prisma.account.findFirst({
+            where: { name: data.category }
+        });
+        if (!account) {
+            const code = `${data.type === 'INCOME' ? '4' : '5'}${Date.now().toString().slice(-4)}`;
+            account = await this.prisma.account.create({
+                data: {
+                    name: data.category,
+                    code: code,
+                    type: data.type,
+                    balance: 0
+                }
+            });
+        }
+        await this.prisma.account.update({
+            where: { id: account.id },
+            data: {
+                balance: {
+                    increment: Number(data.amount)
+                }
+            }
+        });
+        return this.prisma.transaction.update({
+            where: { id },
+            data: {
+                date: new Date(data.date),
+                description: data.description,
+                amount: data.amount,
+                type: data.type,
+                accountId: account.id,
+                receiptUrl: data.receiptUrl
+            }
+        });
+    }
+    async deleteTransaction(id) {
+        const transaction = await this.prisma.transaction.findUnique({
+            where: { id },
+            include: { account: true }
+        });
+        if (!transaction) {
+            throw new Error('Transaction not found');
+        }
+        await this.prisma.account.update({
+            where: { id: transaction.accountId },
+            data: {
+                balance: {
+                    decrement: Number(transaction.amount)
+                }
+            }
+        });
+        return this.prisma.transaction.delete({
+            where: { id }
         });
     }
     async getProfitAndLoss(startDate, endDate) {
-        const income = await this.prisma.transaction.aggregate({
+        const start = startDate ? new Date(startDate) : new Date(new Date().getFullYear(), 0, 1);
+        const end = endDate ? new Date(endDate) : new Date();
+        const transactions = await this.prisma.transaction.findMany({
             where: {
-                date: { gte: new Date(startDate), lte: new Date(endDate) },
-                account: { type: 'INCOME' },
+                date: {
+                    gte: start,
+                    lte: end,
+                },
             },
-            _sum: { amount: true },
-        });
-        const expenses = await this.prisma.transaction.aggregate({
-            where: {
-                date: { gte: new Date(startDate), lte: new Date(endDate) },
-                account: { type: 'EXPENSE' },
+            include: {
+                account: true,
             },
-            _sum: { amount: true },
         });
-        const totalIncome = Number(income._sum.amount || 0);
-        const totalExpense = Number(expenses._sum.amount || 0);
+        const income = transactions
+            .filter(t => t.account.type === 'INCOME' || t.type === 'INCOME')
+            .reduce((sum, t) => sum + Number(t.amount), 0);
+        const expenses = transactions
+            .filter(t => t.account.type === 'EXPENSE' || t.type === 'EXPENSE')
+            .reduce((sum, t) => sum + Number(t.amount), 0);
         return {
-            totalIncome,
-            totalExpense,
-            netProfit: totalIncome - totalExpense,
+            startDate: start,
+            endDate: end,
+            income,
+            expenses,
+            netProfit: income - expenses,
         };
     }
     async getBalanceSheet(date) {
-        const assets = await this.prisma.account.aggregate({
-            where: { type: 'ASSET' },
-            _sum: { balance: true },
-        });
-        const liabilities = await this.prisma.account.aggregate({
-            where: { type: 'LIABILITY' },
-            _sum: { balance: true },
-        });
-        const equity = await this.prisma.account.aggregate({
-            where: { type: 'EQUITY' },
-            _sum: { balance: true },
-        });
+        const accounts = await this.prisma.account.findMany();
+        const assets = accounts.filter(a => a.type === 'ASSET');
+        const liabilities = accounts.filter(a => a.type === 'LIABILITY');
+        const equity = accounts.filter(a => a.type === 'EQUITY');
         return {
-            totalAssets: assets._sum.balance || 0,
-            totalLiabilities: liabilities._sum.balance || 0,
-            totalEquity: equity._sum.balance || 0,
+            assets,
+            liabilities,
+            equity,
+            totalAssets: assets.reduce((sum, a) => sum + Number(a.balance), 0),
+            totalLiabilities: liabilities.reduce((sum, a) => sum + Number(a.balance), 0),
+            totalEquity: equity.reduce((sum, a) => sum + Number(a.balance), 0),
         };
     }
 };
